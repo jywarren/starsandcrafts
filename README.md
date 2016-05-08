@@ -6,6 +6,11 @@ A spacemaker for kids and their fellow officers in interstellar space
 
 ****
 
+![screenshot](http://jywarren.github.io/spaceandcrafts/screenshot.png)
+
+
+****
+
 ## Resources
 
 https://github.com/mrdoob/three.js/blob/master/examples/webgl_lensflares.html
