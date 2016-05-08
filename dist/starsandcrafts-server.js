@@ -44,12 +44,18 @@ function init() {
 
   mesh = new THREE.Mesh( new THREE.BoxGeometry( 300, 300, 300, 7, 7, 7 ), new THREE.MultiMaterial( materials ) );
   mesh.scale.x = - 1;
+//  mesh.scale.y =   1;
+//  mesh.scale.z =   1;
   scene.add( mesh );
+
+  // stuff
 
   renderer = new THREE.CanvasRenderer();
   renderer.setPixelRatio( window.devicePixelRatio );
   renderer.setSize( window.innerWidth, window.innerHeight );
   container.appendChild( renderer.domElement );
+
+  // events
 
   document.addEventListener( 'mousedown', onDocumentMouseDown, false );
   document.addEventListener( 'mousemove', onDocumentMouseMove, false );
@@ -62,6 +68,41 @@ function init() {
   //
 
   window.addEventListener( 'resize', onWindowResize, false );
+
+
+
+  // scene
+
+  scene.fog = new THREE.Fog( 0x000000, 3500, 15000 );
+  scene.fog.color.setHSL( 0.51, 0.4, 0.01 );
+
+  // world
+
+  var s = 4;
+  var cube = new THREE.BoxGeometry( s, s, s );
+  var material = new THREE.MeshPhongMaterial( { color: 0xffffff, specular: 0xffffff, shininess: 50 } );
+  for ( var i = 0; i < 200; i ++ ) {
+    var mesh = new THREE.Mesh( cube, material );
+    mesh.position.x = 100 * ( 2.0 * Math.random() - 1.0 );
+    mesh.position.y = 10 * ( 2.0 * Math.random() - 1.0 );
+    mesh.position.z = 100 * ( 2.0 * Math.random() - 1.0 );
+    mesh.rotation.x = Math.random() * Math.PI;
+    mesh.rotation.y = Math.random() * Math.PI;
+    mesh.rotation.z = Math.random() * Math.PI;
+    mesh.matrixAutoUpdate = false;
+    mesh.updateMatrix();
+    scene.add( mesh );
+  }
+
+
+  // lights
+
+  var dirLight = new THREE.DirectionalLight( 0xffffff, 0.05 );
+  dirLight.position.set( 0, 0.2, 0 ).normalize();
+  scene.add( dirLight );
+  dirLight.color.setHSL( 0.1, 0.7, 0.9 );
+
+
 
 }
 
