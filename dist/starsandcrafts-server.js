@@ -8,7 +8,8 @@ onMouseDownMouseX = 0, onMouseDownMouseY = 0,
 lon = 90, onMouseDownLon = 0,
 lat = 0, onMouseDownLat = 0,
 phi = 0, theta = 0,
-target = new THREE.Vector3();
+target = new THREE.Vector3(),
+meteors = [];
 
 init();
 animate();
@@ -28,7 +29,7 @@ function init() {
   controls.movementSpeed = 10;
   controls.domElement = container;
   controls.rollSpeed = Math.PI / 12;
-  controls.autoForward = true;
+  controls.autoForward = false;
   controls.dragToLook = true;
 
   scene = new THREE.Scene();
@@ -91,16 +92,17 @@ function init() {
   var cube = new THREE.BoxGeometry( s, s, s );
   var material = new THREE.MeshPhongMaterial( { color: 0xffffff, specular: 0xffffff, shininess: 50 } );
   for ( var i = 0; i < 200; i ++ ) {
-    var mesh = new THREE.Mesh( cube, material );
-    mesh.position.x = 100 * ( 2.0 * Math.random() - 1.0 );
-    mesh.position.y = 10 * ( 2.0 * Math.random() - 1.0 );
-    mesh.position.z = 100 * ( 2.0 * Math.random() - 1.0 );
-    mesh.rotation.x = Math.random() * Math.PI;
-    mesh.rotation.y = Math.random() * Math.PI;
-    mesh.rotation.z = Math.random() * Math.PI;
-    mesh.matrixAutoUpdate = false;
-    mesh.updateMatrix();
-    scene.add( mesh );
+    var meteor = new THREE.Mesh( cube, material );
+    meteor.position.x = 100 * ( 2.0 * Math.random() - 1.0 );
+    meteor.position.y = 10 * ( 2.0 * Math.random() - 1.0 );
+    meteor.position.z = 100 * ( 2.0 * Math.random() - 1.0 );
+    meteor.rotation.x = Math.random() * Math.PI;
+    meteor.rotation.y = Math.random() * Math.PI;
+    meteor.rotation.z = Math.random() * Math.PI;
+    meteor.matrixAutoUpdate = false;
+    meteor.updateMatrix();
+    meteors.push( meteor );
+    scene.add( meteor );
   }
 
 
@@ -110,20 +112,23 @@ function init() {
   dirLight.position.set( 0, 0.2, 0 ).normalize();
   scene.add( dirLight );
 
-  dirLight.color.setHSL( 0.1, 0.7, 0.9 );
+  dirLight.color.setHSL( 0.1, 0.7, 0.5 );
 
   // lens flares
-/*
+  // Not visible for some reason. Maybe they're outside the cosmos?
+
   var textureLoader = new THREE.TextureLoader();
-  var textureFlare0 = textureLoader.load( "textures/lensflare/lensflare0.png" );
-  var textureFlare2 = textureLoader.load( "textures/lensflare/lensflare2.png" );
-  var textureFlare3 = textureLoader.load( "textures/lensflare/lensflare3.png" );
+
+  var textureFlare0 = textureLoader.load( "../images/textures/lensflares/lensflare0.png" );
+  var textureFlare2 = textureLoader.load( "../images/textures/lensflares/lensflare2.png" );
+  var textureFlare3 = textureLoader.load( "../images/textures/lensflares/lensflare3.png" );
 
   addLight( 0.55, 0.9, 0.5, 5000, 0, -1000 );
   addLight( 0.08, 0.8, 0.5,    0, 0, -1000 );
   addLight( 0.995, 0.5, 0.9, 5000, 5000, -1000 );
 
   function addLight( h, s, l, x, y, z ) {
+
     var light = new THREE.PointLight( 0xffffff, 1.5, 2000 );
     light.color.setHSL( h, s, l );
     light.position.set( x, y, z );
@@ -141,8 +146,8 @@ function init() {
     lensFlare.customUpdateCallback = lensFlareUpdateCallback;
     lensFlare.position.copy( light.position );
     scene.add( lensFlare );
+
   }
-*/
 
 }
 
@@ -205,6 +210,13 @@ function update() {
     cosmos.position.y = camera.position.y;
     cosmos.position.z = camera.position.z;
   }
+
+  meteors.forEach(function(meteor) {
+
+    meteor.rotation.y += 0.005;
+    meteor.updateMatrix();
+
+  });
 
   controls.update( clock.getDelta() );
 
