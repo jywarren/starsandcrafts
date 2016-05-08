@@ -149,6 +149,24 @@ function init() {
 
   }
 
+  // peer connecting
+
+  var peer = new Peer('starsandcrafts-server', {key: 'wapghotvz0s2x1or'});
+
+  peer.on('connection', function(conn) {
+
+    console.log('Peer connection established');
+
+    conn.on('data', function(data){
+
+      console.log(data);
+
+      if (data == "left")  camera.rotation.x += 0.01;
+      if (data == "right") camera.rotation.x -= 0.01;
+      
+    });
+  });
+
 }
 
 function onWindowResize() {

@@ -4,6 +4,7 @@
     <title>Stars and Crafts</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
     <style>
       body {
         background-color: rgb(200,200,200);
@@ -26,26 +27,34 @@
         color: #ffffff;
       }
     </style>
+
+    <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+
+    <link href="../node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../node_modules/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+
   </head>
   <body>
 
     <div id="container"></div>
     <div id="info"><a href="https://github.com/jywarren/starsandcrafts" target="_blank">Stars &amp; Crafts</a></div>
 
-    <script src="http://webrtc.github.io/adapter/adapter-latest.js"></script>
+    <hr />
 
-    <script src="../node_modules/three/three.js"></script>
+    <div id="controls" class="row" style="text-align:center;">
 
-    <script src="../node_modules/three/examples/js/renderers/Projector.js"></script>
-    <script src="../node_modules/three/examples/js/renderers/CanvasRenderer.js"></script>
-<!-- maybe needed for fog? -->
-<!--    <script src="../node_modules/three/examples/js/ImprovedNoise.js"></script>-->
-    <script src="../node_modules/three/examples/js/controls/FlyControls.js"></script>
+      <p><a class="btn btn-default command" data-command="forward">FWD</a></p>
+      <p>
+        <a class="btn btn-default command" data-command="left">Left</a>
+        <a class="btn btn-default command" data-command="right">Right</a>
+      </p>
+      <p><a class="btn btn-default command" data-command="reverse">REV</a></p>
+
+    </div>
 
     <script src="http://cdn.peerjs.com/0.3/peer.js"></script>
-    <script src="../dist/lensflares.js"></script>
-    <script src="../dist/events.js"></script>
-    <script src="../dist/starsandcrafts-server.js"></script>
+
+    <script src="../dist/starsandcrafts-client.js"></script>
 
   </body>
 </html>
