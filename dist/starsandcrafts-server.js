@@ -1,6 +1,6 @@
 // based on https://github.com/mrdoob/three.js/blob/master/examples/canvas_geometry_panorama.html
 
-var camera, scene, renderer;
+var camera, controls, scene, renderer, clock, cosmos;
 
 var texture_placeholder,
 isUserInteracting = false,
@@ -15,11 +15,21 @@ animate();
 
 function init() {
 
-  var container, mesh;
+  var container;
 
   container = document.getElementById( 'container' );
 
+  clock = new THREE.Clock();
+
   camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 1100 );
+
+  controls = new THREE.FlyControls( camera );
+
+  controls.movementSpeed = 10;
+  controls.domElement = container;
+  controls.rollSpeed = Math.PI / 12;
+  controls.autoForward = true;
+  controls.dragToLook = true;
 
   scene = new THREE.Scene();
 
@@ -42,11 +52,9 @@ function init() {
 
   ];
 
-  mesh = new THREE.Mesh( new THREE.BoxGeometry( 300, 300, 300, 7, 7, 7 ), new THREE.MultiMaterial( materials ) );
-  mesh.scale.x = - 1;
-//  mesh.scale.y =   1;
-//  mesh.scale.z =   1;
-  scene.add( mesh );
+  cosmos = new THREE.Mesh( new THREE.BoxGeometry( 500, 500, 500, 7, 7, 7 ), new THREE.MultiMaterial( materials ) );
+  cosmos.scale.x = - 1;
+  scene.add( cosmos );
 
   // stuff
 
@@ -72,6 +80,7 @@ function init() {
 
 
   // scene
+  // not working: 
 
   scene.fog = new THREE.Fog( 0x000000, 3500, 15000 );
   scene.fog.color.setHSL( 0.51, 0.4, 0.01 );
@@ -100,9 +109,40 @@ function init() {
   var dirLight = new THREE.DirectionalLight( 0xffffff, 0.05 );
   dirLight.position.set( 0, 0.2, 0 ).normalize();
   scene.add( dirLight );
+
   dirLight.color.setHSL( 0.1, 0.7, 0.9 );
 
+  // lens flares
+/*
+  var textureLoader = new THREE.TextureLoader();
+  var textureFlare0 = textureLoader.load( "textures/lensflare/lensflare0.png" );
+  var textureFlare2 = textureLoader.load( "textures/lensflare/lensflare2.png" );
+  var textureFlare3 = textureLoader.load( "textures/lensflare/lensflare3.png" );
 
+  addLight( 0.55, 0.9, 0.5, 5000, 0, -1000 );
+  addLight( 0.08, 0.8, 0.5,    0, 0, -1000 );
+  addLight( 0.995, 0.5, 0.9, 5000, 5000, -1000 );
+
+  function addLight( h, s, l, x, y, z ) {
+    var light = new THREE.PointLight( 0xffffff, 1.5, 2000 );
+    light.color.setHSL( h, s, l );
+    light.position.set( x, y, z );
+    scene.add( light );
+    var flareColor = new THREE.Color( 0xffffff );
+    flareColor.setHSL( h, s, l + 0.5 );
+    var lensFlare = new THREE.LensFlare( textureFlare0, 700, 0.0, THREE.AdditiveBlending, flareColor );
+    lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
+    lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
+    lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
+    lensFlare.add( textureFlare3, 60, 0.6, THREE.AdditiveBlending );
+    lensFlare.add( textureFlare3, 70, 0.7, THREE.AdditiveBlending );
+    lensFlare.add( textureFlare3, 120, 0.9, THREE.AdditiveBlending );
+    lensFlare.add( textureFlare3, 70, 1.0, THREE.AdditiveBlending );
+    lensFlare.customUpdateCallback = lensFlareUpdateCallback;
+    lensFlare.position.copy( light.position );
+    scene.add( lensFlare );
+  }
+*/
 
 }
 
@@ -142,6 +182,7 @@ function animate() {
 
 function update() {
 
+  /*
   if ( isUserInteracting === false ) {
 
     lon += 0.1;
@@ -157,6 +198,15 @@ function update() {
   target.z = 500 * Math.sin( phi ) * Math.sin( theta );
 
   camera.lookAt( target );
+  */
+
+  if (cosmos) {
+    cosmos.position.x = camera.position.x;
+    cosmos.position.y = camera.position.y;
+    cosmos.position.z = camera.position.z;
+  }
+
+  controls.update( clock.getDelta() );
 
   renderer.render( scene, camera );
 

@@ -7,8 +7,8 @@ function onDocumentMouseDown( event ) {
   onPointerDownPointerX = event.clientX;
   onPointerDownPointerY = event.clientY;
 
-  onPointerDownLon = lon;
-  onPointerDownLat = lat;
+//  onPointerDownLon = lon;
+//  onPointerDownLat = lat;
 
 }
 
@@ -16,8 +16,8 @@ function onDocumentMouseMove( event ) {
 
   if ( isUserInteracting === true ) {
 
-    lon = ( onPointerDownPointerX - event.clientX ) * 0.1 + onPointerDownLon;
-    lat = ( event.clientY - onPointerDownPointerY ) * 0.1 + onPointerDownLat;
+//    lon = ( onPointerDownPointerX - event.clientX ) * 0.1 + onPointerDownLon;
+//    lat = ( event.clientY - onPointerDownPointerY ) * 0.1 + onPointerDownLat;
 
   }
 
@@ -31,8 +31,8 @@ function onDocumentMouseUp( event ) {
 
 function onDocumentMouseWheel( event ) {
 
-  camera.fov -= event.wheelDeltaY * 0.05;
-  camera.updateProjectionMatrix();
+//  camera.fov -= event.wheelDeltaY * 0.05;
+//  camera.updateProjectionMatrix();
 
 }
 
@@ -59,8 +59,8 @@ function onDocumentTouchMove( event ) {
 
     event.preventDefault();
 
-    lon = ( onPointerDownPointerX - event.touches[0].pageX ) * 0.1 + onPointerDownLon;
-    lat = ( event.touches[0].pageY - onPointerDownPointerY ) * 0.1 + onPointerDownLat;
+//    lon = ( onPointerDownPointerX - event.touches[0].pageX ) * 0.1 + onPointerDownLon;
+//    lat = ( event.touches[0].pageY - onPointerDownPointerY ) * 0.1 + onPointerDownLat;
 
   }
 
