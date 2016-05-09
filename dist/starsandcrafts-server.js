@@ -161,8 +161,12 @@ function init() {
 
       console.log(data);
 
-      if (data == "left")  camera.rotation.x += 0.01;
-      if (data == "right") camera.rotation.x -= 0.01;
+      if (data == "left")        camera.rotation.y += 0.01;
+      if (data == "right")       camera.rotation.y -= 0.01;
+      if (data == "up")          camera.rotation.x += 0.01;
+      if (data == "down")        camera.rotation.x -= 0.01;
+      if (data == "tiltleft")    camera.rotation.z += 0.01;
+      if (data == "tiltright")   camera.rotation.z -= 0.01;
       
     });
   });
@@ -206,11 +210,6 @@ function animate() {
 function update() {
 
   /*
-  if ( isUserInteracting === false ) {
-
-    lon += 0.1;
-
-  }
 
   lat = Math.max( - 85, Math.min( 85, lat ) );
   phi = THREE.Math.degToRad( 90 - lat );

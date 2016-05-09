@@ -11,9 +11,19 @@ var peer, conn;
 
   conn.on('open', function(){
 
-    $('.command').click(function() {
+    $('.command').on('mousedown', function() {
       console.log($(this).attr('data-command'));
       conn.send($(this).attr('data-command'));
+    });
+
+    $(document).on('keydown', function(e) {
+      console.log(e.which)
+      if ( e.which == 38 ) conn.send('up')
+      if ( e.which == 40 ) conn.send('down')
+      if ( e.which == 37 ) conn.send('left')
+      if ( e.which == 39 ) conn.send('right')
+      if ( e.which == 81 ) conn.send('tiltleft')
+      if ( e.which == 69 ) conn.send('tiltright')
     });
 
   });
