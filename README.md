@@ -6,8 +6,11 @@ A spacemaker for kids and their fellow officers in interstellar space
 
 ****
 
-![screenshot](http://jywarren.github.io/spaceandcrafts/screenshot.png)
+Demo: https://jywarren.github.io/starsandcrafts/
 
+**Server:** Open this first; once loaded, someone else _anywhere on the internet_ can open the client and drive the spaceship. 
+
+**Client:** Open the client after the server. Only one allowed at a time, for now. 
 
 ****
 
@@ -37,4 +40,13 @@ I'm using hi-res NASA panos to make 3d texture cubes for our background. Resourc
 * starting with NASA Deep Star Maps: https://svs.gsfc.nasa.gov/cgi-bin/details.cgi?aid=3895
 * Also check out http://apod.nasa.gov/apod/ap110903.html
 * Flash-based online version: http://gonchar.me/panorama/
+
+
+## Development
+
+Requirements: NodeJS (https://nodejs.org)
+
+Clone the repository, then run `npm install`
+
+
 
