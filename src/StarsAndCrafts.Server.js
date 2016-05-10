@@ -9,6 +9,7 @@ var Peer          = require('peerjs'),
 require('three-fly-controls')(THREE);
 
 SC.Util      = require('./Util.js');
+SC.Events    = require('./StarsAndCrafts.Events.js');
 SC.Cosmos    = require('./StarsAndCrafts.Cosmos.js');
 SC.Thing     = require('./StarsAndCrafts.Thing.js');
 SC.Lighting  = require('./StarsAndCrafts.Lighting.js');
@@ -26,10 +27,8 @@ SC.Server = Class.extend({
 //  camera.fov -= event.wheelDeltaY * 0.05;
 //  camera.updateProjectionMatrix();
 
-
     // all things here!
     _server.objects = [];
-
  
     container = container || document.getElementById( 'container' );
  
@@ -37,11 +36,7 @@ SC.Server = Class.extend({
  
     _server.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 1100 );
 
-
-    // very primitive for the moment:
-    _server.events = require('./StarsAndCrafts.Events.js'); // returns a function
-    _server.events(_server); // run it
-
+    _server.events = SC.Events(_server);
 
     // move to controls class 
     _server.controls = new THREE.FlyControls( _server.camera );
@@ -51,16 +46,11 @@ SC.Server = Class.extend({
     _server.controls.rollSpeed = Math.PI / 360;
     _server.controls.autoForward = false;
     _server.controls.dragToLook = true;
-
  
     _server.scene = new THREE.Scene();
 
-
     _server.cosmos = new SC.Cosmos(_server);
     _server.scene.add( _server.cosmos.mesh );
-
- 
-    // stuff
  
     _server.renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
     _server.renderer.setPixelRatio( window.devicePixelRatio );
@@ -68,7 +58,6 @@ SC.Server = Class.extend({
     container.appendChild( _server.renderer.domElement ); 
  
  
-    // scene
     // not working: 
  
     _server.scene.fog = new THREE.Fog( 0x000000, 3500, 15000 );
@@ -103,7 +92,6 @@ SC.Server = Class.extend({
  
     peer.on('connection', function(conn) {
  
-      console.log('Peer connection established');
       $('#info .crew').html('Helm connected.');
  
       conn.on('data', function(data){
