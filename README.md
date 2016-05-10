@@ -6,7 +6,7 @@ A spacemaker for kids and their fellow officers in interstellar space
 
 ****
 
-Demo: https://jywarren.github.io/starsandcrafts/
+Demo: http://jywarren.github.io/starsandcrafts/
 
 **Server:** Open this first; once loaded, someone else _anywhere on the internet_ can open the client and drive the spaceship. 
 
@@ -19,20 +19,25 @@ Demo: https://jywarren.github.io/starsandcrafts/
 
 ## Resources
 
-https://github.com/mrdoob/three.js/blob/master/examples/webgl_lensflares.html
+http://www.html5rocks.com/en/tutorials/casestudies/100000stars/
 
 http://threejs.org/examples/#webgl_lensflares
-
-http://www.html5rocks.com/en/tutorials/casestudies/100000stars/
 
 https://github.com/mrdoob/three.js/blob/master/examples/webgl_geometry_terrain_fog.html
 
 https://github.com/mrdoob/three.js/blob/master/examples/canvas_geometry_panorama.html
 
-http://webrtc.github.io/samples/src/content/datachannel/datatransfer/
+http://threejs.org/docs/#Reference/Extras.Helpers/BoxHelper
 
-https://github.com/webrtc/adapter
+https://github.com/jeromeetienne/threex.planets
 
+http://learningthreejs.com/blog/2013/09/16/how-to-make-the-earth-in-webgl/
+
+http://www.instructables.com/id/Instructables-Universe-in-Threejs/
+
+http://www.threejsgames.com/extensions/
+
+http://learningthreejs.com/data/2014-01-10-flying-spaceship-minigame/slides/slides/
 
 ### Panoramas
 

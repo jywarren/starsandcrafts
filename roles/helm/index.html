@@ -26,18 +26,25 @@
       a {
         color: #ffffff;
       }
+
+      .alert {
+        margin: 10px;
+      }
     </style>
 
-    <script src="../bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="../../bower_components/jquery/dist/jquery.min.js"></script>
 
-    <link href="../bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../bower_components/fontawesome/css/font-awesome.min.css" rel="stylesheet">
+    <link href="../../bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../bower_components/fontawesome/css/font-awesome.min.css" rel="stylesheet">
 
   </head>
   <body>
 
     <div id="container"></div>
-    <div id="info"><a href="https://github.com/jywarren/starsandcrafts" target="_blank">Stars &amp; Crafts</a></div>
+    <div id="info">
+      <a style="float:left;" href="../../">&laquo; Back</a>
+      <a href="https://github.com/jywarren/starsandcrafts" target="_blank">Stars &amp; Crafts</a>
+    </div>
 
     <hr />
 
@@ -52,11 +59,15 @@
 
       <p>Use the buttons or the arrow keys to navigate the ship.</p>
 
+      <p><a class="btn btn-lg btn-default reconnect">Reconnect</a></p>
+
     </div>
+
+    <p class="alert alert-warning"></p>
 
     <script src="http://cdn.peerjs.com/0.3/peer.js"></script>
 
-    <script src="../dist/starsandcrafts-client.js"></script>
+    <script src="client.js"></script>
 
   </body>
 </html>
