@@ -41,14 +41,43 @@
 
     <hr />
 
-    <div id="controls" class="row" style="text-align:center;">
+    <div id="controls" class="container" style="text-align:center;">
+
+      <div class="form-group">
+        <label for="key">Choose a key:</label>
+        <input id="key" class="input-key form-control input-block" />
+      </div>
 
       <p>
-        <a class="btn btn-default" href="server/">Server</a>
-        <a class="btn btn-default" href="client/">Client</a>
+        <a class="btn btn-default btn-server">Server</a>
+        <a class="btn btn-default btn-client">Client</a>
       </p>
 
     </div>
+
+    <script>
+
+      (function() {
+
+        $('.input-key').val(btoa(Math.random()).split('=')[0].substr(0, 4));
+
+        $('.btn-server').click(function(e) {
+
+          e.preventDefault();
+          window.location = "server/#key=" + $('.input-key').val();
+
+        });
+
+        $('.btn-client').click(function(e) {
+
+          e.preventDefault();
+          window.location = "client/#key=" + $('.input-key').val();
+
+        });
+
+      })();
+
+    </script>
 
   </body>
 </html>

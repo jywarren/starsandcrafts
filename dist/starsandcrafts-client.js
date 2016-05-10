@@ -2,12 +2,32 @@ var peer, conn;
 
 (function() {
 
+  var getUrlHashParameter = function(sParam) {
+
+    var sPageURL = window.location.hash;
+    if (sPageURL) sPageURL = sPageURL.split('#')[1];
+    var sURLVariables = sPageURL.split('&');
+ 
+    for (var i = 0; i < sURLVariables.length; i++) {
+ 
+      var sParameterName = sURLVariables[i].split('=');
+ 
+      if (sParameterName[0] == sParam) {
+        return sParameterName[1];
+      }
+ 
+    }
+
+  }
+
   // peer connecting
 
-  peer = new Peer('starsandcrafts-client', {key: 'wapghotvz0s2x1or'});
+  var key = getUrlHashParameter('key');
 
-  conn = peer.connect('starsandcrafts-server');
-  console.log('Peer created: ', peer)
+  peer = new Peer(key + '-helm', {key: 'wapghotvz0s2x1or'});
+
+  conn = peer.connect(key);
+  console.log('Peer created: ', peer);
 
   conn.on('open', function(){
 
