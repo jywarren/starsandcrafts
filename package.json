@@ -1,6 +1,6 @@
 {
   "name": "starsandcrafts",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A spacemaker for kids and their fellow officers in interstellar space",
   "main": "dist/starsandcrafts-server.js",
   "scripts": {

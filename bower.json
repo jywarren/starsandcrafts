@@ -1,0 +1,10 @@
+{
+  "name": "starsandcrafts",
+  "version": "0.0.2",
+  "main": "dist/starsandcrafts-server.js",
+  "dependencies": {
+    "fontawesome":     "~4.5.0",
+    "bootstrap":       "~3.2.0",
+    "jquery":          "~2.1.3"
+  }
+}

@@ -44945,9 +44945,11 @@ module.exports = function(_server) {
 },{}],18:[function(require,module,exports){
 var THREE = require('three');
 
-module.exports = function(_server) {
+module.exports = Class.extend({
 
-  // lights
+  init: function(_server) {
+
+    // lights
 
 /*
   var dirLight = new THREE.DirectionalLight( 0xffffff, 0.05 );
@@ -44958,66 +44960,65 @@ module.exports = function(_server) {
 
 */
 
-  // lens flares
-  // Not visible for some reason. Maybe they're outside the cosmos?
-  // also something wrong like this: 
-  // http://stackoverflow.com/questions/17852856/how-to-add-lensflare-using-three-js/20151304
-
-  var textureLoader = new THREE.TextureLoader();
-
-  var textureFlare0 = textureLoader.load( "../images/textures/lensflares/lensflare0.png" );
-  var textureFlare2 = textureLoader.load( "../images/textures/lensflares/lensflare2.png" );
-  var textureFlare3 = textureLoader.load( "../images/textures/lensflares/lensflare3.png" );
-
-  function lensFlareUpdateCallback( object ) {
-
-    var f, fl = object.lensFlares.length;
-    var flare;
-    var vecX = -object.positionScreen.x * 2;
-    var vecY = -object.positionScreen.y * 2;
-
-    for( f = 0; f < fl; f++ ) {
-      flare = object.lensFlares[ f ];
-      flare.x = object.positionScreen.x + vecX * flare.distance;
-      flare.y = object.positionScreen.y + vecY * flare.distance;
-      flare.rotation = 0;
+    // lens flares
+ 
+    var textureLoader = new THREE.TextureLoader();
+ 
+    var textureFlare0 = textureLoader.load( "../images/textures/lensflares/lensflare0.png" );
+    var textureFlare2 = textureLoader.load( "../images/textures/lensflares/lensflare2.png" );
+    var textureFlare3 = textureLoader.load( "../images/textures/lensflares/lensflare3.png" );
+ 
+    function lensFlareUpdateCallback( object ) {
+ 
+      var f, fl = object.lensFlares.length;
+      var flare;
+      var vecX = -object.positionScreen.x * 2;
+      var vecY = -object.positionScreen.y * 2;
+ 
+      for( f = 0; f < fl; f++ ) {
+        flare = object.lensFlares[ f ];
+        flare.x = object.positionScreen.x + vecX * flare.distance;
+        flare.y = object.positionScreen.y + vecY * flare.distance;
+        flare.rotation = 0;
+      }
+ 
+      object.lensFlares[ 2 ].y += 0.025;
+      object.lensFlares[ 3 ].rotation = object.positionScreen.x * 0.5 + THREE.Math.degToRad( 45 );
+ 
     }
-
-    object.lensFlares[ 2 ].y += 0.025;
-    object.lensFlares[ 3 ].rotation = object.positionScreen.x * 0.5 + THREE.Math.degToRad( 45 );
+ 
+    function addLight( h, s, l, x, y, z ) {
+ 
+      var light = new THREE.PointLight( 0xffffff, 1.5, 2000 );
+      light.color.setHSL( h, s, l );
+      light.position.set( x, y, z );
+ 
+      _server.scene.add( light );
+ 
+      var flareColor = new THREE.Color( 0xffffff );
+      flareColor.setHSL( h, s, l + 0.5 );
+      var lensFlare = new THREE.LensFlare( textureFlare0, 700, 0.0, THREE.AdditiveBlending, flareColor );
+      lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
+      lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
+      lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
+      lensFlare.add( textureFlare3, 60, 0.6, THREE.AdditiveBlending );
+      lensFlare.add( textureFlare3, 70, 0.7, THREE.AdditiveBlending );
+      lensFlare.add( textureFlare3, 120, 0.9, THREE.AdditiveBlending );
+      lensFlare.add( textureFlare3, 70, 1.0, THREE.AdditiveBlending );
+      lensFlare.customUpdateCallback = lensFlareUpdateCallback;
+      lensFlare.position.copy( light.position );
+ 
+      _server.scene.add( lensFlare );
+ 
+    }
+ 
+    addLight( 0.55,  0.9, 0.5,  300,  0,   100 );
+    addLight( 0.08,  0.8, 0.5,    0,  0,   -100 );
+    addLight( 0.995, 0.5, 0.9,  -100, 300, -100 );
 
   }
 
-  function addLight( h, s, l, x, y, z ) {
-
-    var light = new THREE.PointLight( 0xffffff, 1.5, 2000 );
-    light.color.setHSL( h, s, l );
-    light.position.set( x, y, z );
-
-    _server.scene.add( light );
-
-    var flareColor = new THREE.Color( 0xffffff );
-    flareColor.setHSL( h, s, l + 0.5 );
-    var lensFlare = new THREE.LensFlare( textureFlare0, 700, 0.0, THREE.AdditiveBlending, flareColor );
-    lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
-    lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
-    lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
-    lensFlare.add( textureFlare3, 60, 0.6, THREE.AdditiveBlending );
-    lensFlare.add( textureFlare3, 70, 0.7, THREE.AdditiveBlending );
-    lensFlare.add( textureFlare3, 120, 0.9, THREE.AdditiveBlending );
-    lensFlare.add( textureFlare3, 70, 1.0, THREE.AdditiveBlending );
-    lensFlare.customUpdateCallback = lensFlareUpdateCallback;
-    lensFlare.position.copy( light.position );
-
-    _server.scene.add( lensFlare );
-
-  }
-
-  addLight( 0.55,  0.9, 0.5,  300, 0,   -100 );
-  addLight( 0.08,  0.8, 0.5,    0, 0,   -100 );
-  addLight( 0.995, 0.5, 0.9,  300, 300, -100 );
-
-}
+});
 
 },{"three":15}],19:[function(require,module,exports){
 StarsAndCrafts = SC = {};
@@ -45029,7 +45030,9 @@ var Peer          = require('peerjs'),
 
 require('three-fly-controls')(THREE);
 
-SC.Cosmos = require('./StarsAndCrafts.Cosmos.js');
+SC.Cosmos    = require('./StarsAndCrafts.Cosmos.js');
+SC.Thing     = require('./StarsAndCrafts.Thing.js');
+SC.Lighting  = require('./StarsAndCrafts.Lighting.js');
 
 
 SC.Server = Class.extend({
@@ -45038,7 +45041,7 @@ SC.Server = Class.extend({
 
     var _server = this;
  
-//        target = new THREE.Vector3();
+// target = new THREE.Vector3();
 
 // cool for viewscreen zooming:
 //  camera.fov -= event.wheelDeltaY * 0.05;
@@ -45092,30 +45095,23 @@ SC.Server = Class.extend({
     _server.scene.fog = new THREE.Fog( 0x000000, 3500, 15000 );
     _server.scene.fog.color.setHSL( 0.51, 0.4, 0.01 );
 
- 
-    // meteors -- subclass!
- 
-    var s = 4;
-    var cube = new THREE.BoxGeometry( s, s, s );
-    var material = new THREE.MeshPhongMaterial( { color: 0xffffff, specular: 0xffffff, shininess: 50 } );
 
-    for ( var i = 0; i < 200; i ++ ) {
-      var meteor = new THREE.Mesh( cube, material );
-      meteor.position.x = 100 * ( 2.0 * Math.random() - 1.0 );
-      meteor.position.y = 10 * ( 2.0 * Math.random() - 1.0 );
-      meteor.position.z = 100 * ( 2.0 * Math.random() - 1.0 );
-      meteor.rotation.x = Math.random() * Math.PI;
-      meteor.rotation.y = Math.random() * Math.PI;
-      meteor.rotation.z = Math.random() * Math.PI;
-      meteor.matrixAutoUpdate = false;
-      meteor.updateMatrix();
-      _server.objects.push( meteor );
-      _server.scene.add( meteor );
-    }
- 
+    // we'll need to diversify Things beyond just meteors, but for now: 
+    _server.meteors = new SC.Thing(_server);
 
-    _server.lighting = require('./StarsAndCrafts.Lighting.js')(_server);
 
+    _server.lighting = new SC.Lighting(_server);
+
+
+    /*
+
+    _server.interfaces = [];
+
+    _server.interfaces.push(
+      new SC.Interface(_server);
+    );
+
+    */
 
     // move to Interface class, pass server so interface instance can move server.camera 
     // or pass Ship so interface can send commands to Ship
@@ -45151,19 +45147,6 @@ SC.Server = Class.extend({
 
 
     _server.update = function() {
-
-      /*
-  
-      lat = Math.max( - 85, Math.min( 85, lat ) );
-      phi = THREE.Math.degToRad( 90 - lat );
-      theta = THREE.Math.degToRad( lon );
-  
-      target.x = 500 * Math.sin( phi ) * Math.cos( theta );
-      target.y = 500 * Math.cos( phi );
-      target.z = 500 * Math.sin( phi ) * Math.sin( theta );
-  
-      _server.camera.lookAt( target );
-      */
   
       if (_server.cosmos) _server.cosmos.update(_server.camera.position);
   
@@ -45180,8 +45163,46 @@ SC.Server = Class.extend({
 
     }
 
+
   }
 
 });
 
-},{"./StarsAndCrafts.Cosmos.js":16,"./StarsAndCrafts.Events.js":17,"./StarsAndCrafts.Lighting.js":18,"peerjs":5,"resig-class":13,"three":15,"three-fly-controls":14}]},{},[19]);
+},{"./StarsAndCrafts.Cosmos.js":16,"./StarsAndCrafts.Events.js":17,"./StarsAndCrafts.Lighting.js":18,"./StarsAndCrafts.Thing.js":20,"peerjs":5,"resig-class":13,"three":15,"three-fly-controls":14}],20:[function(require,module,exports){
+var THREE = require('three');
+
+module.exports = Class.extend({
+
+  // for now, Objects are just meteors
+  init: function(_server) {
+ 
+    var s = 4;
+    var cube = new THREE.BoxGeometry( s, s, s );
+    var material = new THREE.MeshPhongMaterial( { color: 0xffffff, specular: 0xffffff, shininess: 50 } );
+    var meteors = [];
+
+    for ( var i = 0; i < 200; i ++ ) {
+
+      var meteor = new THREE.Mesh( cube, material );
+
+      meteor.position.x = 100 * ( 2.0 * Math.random() - 1.0 );
+      meteor.position.y = 10 * ( 2.0 * Math.random() - 1.0 );
+      meteor.position.z = 100 * ( 2.0 * Math.random() - 1.0 );
+      meteor.rotation.x = Math.random() * Math.PI;
+      meteor.rotation.y = Math.random() * Math.PI;
+      meteor.rotation.z = Math.random() * Math.PI;
+      meteor.matrixAutoUpdate = false;
+      meteor.updateMatrix();
+
+      _server.objects.push( meteor );
+      _server.scene.add( meteor );
+
+    }
+
+    return meteors;
+
+  }
+
+});
+
+},{"three":15}]},{},[19]);

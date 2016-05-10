@@ -7,7 +7,9 @@ var Peer          = require('peerjs'),
 
 require('three-fly-controls')(THREE);
 
-SC.Cosmos = require('./StarsAndCrafts.Cosmos.js');
+SC.Cosmos    = require('./StarsAndCrafts.Cosmos.js');
+SC.Thing     = require('./StarsAndCrafts.Thing.js');
+SC.Lighting  = require('./StarsAndCrafts.Lighting.js');
 
 
 SC.Server = Class.extend({
@@ -16,7 +18,7 @@ SC.Server = Class.extend({
 
     var _server = this;
  
-//        target = new THREE.Vector3();
+// target = new THREE.Vector3();
 
 // cool for viewscreen zooming:
 //  camera.fov -= event.wheelDeltaY * 0.05;
@@ -70,30 +72,23 @@ SC.Server = Class.extend({
     _server.scene.fog = new THREE.Fog( 0x000000, 3500, 15000 );
     _server.scene.fog.color.setHSL( 0.51, 0.4, 0.01 );
 
- 
-    // meteors -- subclass!
- 
-    var s = 4;
-    var cube = new THREE.BoxGeometry( s, s, s );
-    var material = new THREE.MeshPhongMaterial( { color: 0xffffff, specular: 0xffffff, shininess: 50 } );
 
-    for ( var i = 0; i < 200; i ++ ) {
-      var meteor = new THREE.Mesh( cube, material );
-      meteor.position.x = 100 * ( 2.0 * Math.random() - 1.0 );
-      meteor.position.y = 10 * ( 2.0 * Math.random() - 1.0 );
-      meteor.position.z = 100 * ( 2.0 * Math.random() - 1.0 );
-      meteor.rotation.x = Math.random() * Math.PI;
-      meteor.rotation.y = Math.random() * Math.PI;
-      meteor.rotation.z = Math.random() * Math.PI;
-      meteor.matrixAutoUpdate = false;
-      meteor.updateMatrix();
-      _server.objects.push( meteor );
-      _server.scene.add( meteor );
-    }
- 
+    // we'll need to diversify Things beyond just meteors, but for now: 
+    _server.meteors = new SC.Thing(_server);
 
-    _server.lighting = require('./StarsAndCrafts.Lighting.js')(_server);
 
+    _server.lighting = new SC.Lighting(_server);
+
+
+    /*
+
+    _server.interfaces = [];
+
+    _server.interfaces.push(
+      new SC.Interface(_server);
+    );
+
+    */
 
     // move to Interface class, pass server so interface instance can move server.camera 
     // or pass Ship so interface can send commands to Ship
@@ -129,19 +124,6 @@ SC.Server = Class.extend({
 
 
     _server.update = function() {
-
-      /*
-  
-      lat = Math.max( - 85, Math.min( 85, lat ) );
-      phi = THREE.Math.degToRad( 90 - lat );
-      theta = THREE.Math.degToRad( lon );
-  
-      target.x = 500 * Math.sin( phi ) * Math.cos( theta );
-      target.y = 500 * Math.cos( phi );
-      target.z = 500 * Math.sin( phi ) * Math.sin( theta );
-  
-      _server.camera.lookAt( target );
-      */
   
       if (_server.cosmos) _server.cosmos.update(_server.camera.position);
   
@@ -157,6 +139,7 @@ SC.Server = Class.extend({
       _server.renderer.render( _server.scene, _server.camera );
 
     }
+
 
   }
 
