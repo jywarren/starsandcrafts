@@ -43,14 +43,22 @@
 
     <div id="controls" class="container" style="text-align:center;">
 
+      <p>To create a new environment, enter a unique key and press "Server". To connect to an existing server, enter the key listed at the top of the server's display, and select a role.</p>
+
       <div class="form-group">
-        <label for="key">Choose a key:</label>
+        <label for="key">Enter a key:</label>
         <input id="key" class="input-key form-control input-block" />
       </div>
 
       <p>
         <a class="btn btn-default btn-server">Server</a>
-        <a class="btn btn-default btn-client">Client</a>
+      </p>
+
+      <h4>Roles</h4>
+
+      <p>
+        <a class="btn btn-default btn-helm">Helm</a>
+        <a class="btn btn-default btn-sensors disabled">Sensors</a>
       </p>
 
     </div>
@@ -68,10 +76,19 @@
 
         });
 
-        $('.btn-client').click(function(e) {
+        var roles = [
+          "helm",
+          "sensors"
+        ];
 
-          e.preventDefault();
-          window.location = "client/#key=" + $('.input-key').val();
+        roles.forEach(function(role) {
+
+          $('.btn-' + role).click(function(e) {
+ 
+            e.preventDefault();
+            window.location = "roles/" + role + "/#key=" + $('.input-key').val();
+ 
+          });
 
         });
 
