@@ -3,10 +3,12 @@ module.exports = SC;
 
 var Peer          = require('peerjs'),
     Class         = require('resig-class'),
+    $             = require('jquery'),
     THREE         = require('three');
 
 require('three-fly-controls')(THREE);
 
+SC.Util      = require('./Util.js');
 SC.Cosmos    = require('./StarsAndCrafts.Cosmos.js');
 SC.Thing     = require('./StarsAndCrafts.Thing.js');
 SC.Lighting  = require('./StarsAndCrafts.Lighting.js');
@@ -93,8 +95,11 @@ SC.Server = Class.extend({
     // move to Interface class, pass server so interface instance can move server.camera 
     // or pass Ship so interface can send commands to Ship
     // peer connecting
- 
-    var peer = new Peer('starsandcrafts-server', {key: 'wapghotvz0s2x1or'});
+
+    _server.key = SC.Util.getUrlHashParameter('key');
+    $('#info .key').html(' | Key: ' + _server.key);
+
+    var peer = new Peer(_server.key, {key: 'wapghotvz0s2x1or'});
  
     peer.on('connection', function(conn) {
  
