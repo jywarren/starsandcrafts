@@ -46,7 +46,7 @@ I'm using hi-res NASA panos to make 3d texture cubes for our background. Resourc
 
 Requirements: NodeJS (https://nodejs.org)
 
-Clone the repository, then run `npm install`
-
-
-
+1. Clone the repository
+2. Run `npm install`, then `bower install`
+3. Run `grunt build` to build, or `grunt` to watch files in src/ and build continuously.
+4. Run `./run` and navigate to http://localhost:8000 to use locally.

@@ -104,6 +104,7 @@ SC.Server = Class.extend({
     peer.on('connection', function(conn) {
  
       console.log('Peer connection established');
+      $('#info .crew').html('Helm connected.');
  
       conn.on('data', function(data){
  
