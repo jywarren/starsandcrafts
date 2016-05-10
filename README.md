@@ -10,7 +10,10 @@ Demo: https://jywarren.github.io/starsandcrafts/
 
 **Server:** Open this first; once loaded, someone else _anywhere on the internet_ can open the client and drive the spaceship. 
 
-**Client:** Open the client after the server. Only one allowed at a time, for now. 
+**Client:** Enter the code from the server screen.
+
+
+![screenshot](https://raw.githubusercontent.com/jywarren/starsandcrafts/master/screenshot.png)
 
 ****
 
