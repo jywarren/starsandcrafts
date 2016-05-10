@@ -1,8 +1,11 @@
-var THREE = require('three');
+var THREE = require('three'),
+    Class = require('resig-class');
 
-module.exports = {
+module.exports = Class.extend({
 
-  construct: function() {
+  init: function(_server) {
+
+    var _cosmos = this;
 
     // we create a hidden 2d canvas to generate/manipulate textures: 
 
@@ -13,7 +16,6 @@ module.exports = {
     var context = texture_placeholder.getContext( '2d' );
     context.fillStyle = 'rgb( 200, 200, 200 )';
     context.fillRect( 0, 0, texture_placeholder.width, texture_placeholder.height );
-
 
     var loadTexture = function(path) {
 
@@ -44,16 +46,24 @@ module.exports = {
  
     ];
 
+    _cosmos.mesh = new THREE.Mesh( 
+                     new THREE.BoxGeometry( 500, 500, 500, 7, 7, 7 ), 
+                     new THREE.MultiMaterial( materials )
+                   );
 
-    var cosmos = new THREE.Mesh( 
-                       new THREE.BoxGeometry( 500, 500, 500, 7, 7, 7 ), 
-                       new THREE.MultiMaterial( materials )
-                     );
+    _cosmos.mesh.scale.x = - 1;
 
-    cosmos.scale.x = - 1;
 
-    return cosmos;
+    _cosmos.update = function(position) {
+
+      _cosmos.mesh.position.x = position.x;
+      _cosmos.mesh.position.y = position.y;
+      _cosmos.mesh.position.z = position.z;
+
+    }
+
+    return _cosmos;
 
   }
 
-}
+});

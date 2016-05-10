@@ -44843,11 +44843,14 @@ if (typeof exports !== 'undefined') {
 }
 
 },{}],16:[function(require,module,exports){
-var THREE = require('three');
+var THREE = require('three'),
+    Class = require('resig-class');
 
-module.exports = {
+module.exports = Class.extend({
 
-  construct: function() {
+  init: function(_server) {
+
+    var _cosmos = this;
 
     // we create a hidden 2d canvas to generate/manipulate textures: 
 
@@ -44858,7 +44861,6 @@ module.exports = {
     var context = texture_placeholder.getContext( '2d' );
     context.fillStyle = 'rgb( 200, 200, 200 )';
     context.fillRect( 0, 0, texture_placeholder.width, texture_placeholder.height );
-
 
     var loadTexture = function(path) {
 
@@ -44889,21 +44891,29 @@ module.exports = {
  
     ];
 
+    _cosmos.mesh = new THREE.Mesh( 
+                     new THREE.BoxGeometry( 500, 500, 500, 7, 7, 7 ), 
+                     new THREE.MultiMaterial( materials )
+                   );
 
-    var cosmos = new THREE.Mesh( 
-                       new THREE.BoxGeometry( 500, 500, 500, 7, 7, 7 ), 
-                       new THREE.MultiMaterial( materials )
-                     );
+    _cosmos.mesh.scale.x = - 1;
 
-    cosmos.scale.x = - 1;
 
-    return cosmos;
+    _cosmos.update = function(position) {
+
+      _cosmos.mesh.position.x = position.x;
+      _cosmos.mesh.position.y = position.y;
+      _cosmos.mesh.position.z = position.z;
+
+    }
+
+    return _cosmos;
 
   }
 
-}
+});
 
-},{"three":15}],17:[function(require,module,exports){
+},{"resig-class":13,"three":15}],17:[function(require,module,exports){
 module.exports = function(_server) {
 
     // events
@@ -44939,24 +44949,25 @@ module.exports = function(_server) {
 
   // lights
 
+/*
   var dirLight = new THREE.DirectionalLight( 0xffffff, 0.05 );
   dirLight.position.set( 0, 0.2, 0 ).normalize();
   _server.scene.add( dirLight );
 
   dirLight.color.setHSL( 0.1, 0.7, 0.5 );
 
+*/
+
   // lens flares
   // Not visible for some reason. Maybe they're outside the cosmos?
+  // also something wrong like this: 
+  // http://stackoverflow.com/questions/17852856/how-to-add-lensflare-using-three-js/20151304
 
   var textureLoader = new THREE.TextureLoader();
 
   var textureFlare0 = textureLoader.load( "../images/textures/lensflares/lensflare0.png" );
   var textureFlare2 = textureLoader.load( "../images/textures/lensflares/lensflare2.png" );
   var textureFlare3 = textureLoader.load( "../images/textures/lensflares/lensflare3.png" );
-
-  addLight( 0.55, 0.9, 0.5, 5000, 0, -1000 );
-  addLight( 0.08, 0.8, 0.5,    0, 0, -1000 );
-  addLight( 0.995, 0.5, 0.9, 5000, 5000, -1000 );
 
   function lensFlareUpdateCallback( object ) {
 
@@ -44982,7 +44993,9 @@ module.exports = function(_server) {
     var light = new THREE.PointLight( 0xffffff, 1.5, 2000 );
     light.color.setHSL( h, s, l );
     light.position.set( x, y, z );
+
     _server.scene.add( light );
+
     var flareColor = new THREE.Color( 0xffffff );
     flareColor.setHSL( h, s, l + 0.5 );
     var lensFlare = new THREE.LensFlare( textureFlare0, 700, 0.0, THREE.AdditiveBlending, flareColor );
@@ -45000,6 +45013,10 @@ module.exports = function(_server) {
 
   }
 
+  addLight( 0.55,  0.9, 0.5,  300, 0,   -100 );
+  addLight( 0.08,  0.8, 0.5,    0, 0,   -100 );
+  addLight( 0.995, 0.5, 0.9,  300, 300, -100 );
+
 }
 
 },{"three":15}],19:[function(require,module,exports){
@@ -45012,10 +45029,7 @@ var Peer          = require('peerjs'),
 
 require('three-fly-controls')(THREE);
 
-/*
-require('../node_modules/three/examples/js/renderers/Projector.js')(THREE)
-require('../node_modules/three/examples/js/ImprovedNoise.js');
-*/
+SC.Cosmos = require('./StarsAndCrafts.Cosmos.js');
 
 
 SC.Server = Class.extend({
@@ -45060,13 +45074,13 @@ SC.Server = Class.extend({
     _server.scene = new THREE.Scene();
 
 
-    _server.cosmos = require('./StarsAndCrafts.Cosmos.js').construct();
-    _server.scene.add( _server.cosmos );
+    _server.cosmos = new SC.Cosmos(_server);
+    _server.scene.add( _server.cosmos.mesh );
 
  
     // stuff
  
-    _server.renderer = new THREE.WebGLRenderer();
+    _server.renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
     _server.renderer.setPixelRatio( window.devicePixelRatio );
     _server.renderer.setSize( window.innerWidth, window.innerHeight );
     container.appendChild( _server.renderer.domElement ); 
@@ -45151,11 +45165,7 @@ SC.Server = Class.extend({
       _server.camera.lookAt( target );
       */
   
-      if (_server.cosmos) {
-        _server.cosmos.position.x = _server.camera.position.x;
-        _server.cosmos.position.y = _server.camera.position.y;
-        _server.cosmos.position.z = _server.camera.position.z;
-      }
+      if (_server.cosmos) _server.cosmos.update(_server.camera.position);
   
       _server.objects.forEach(function(meteor) {
   

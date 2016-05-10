@@ -7,10 +7,7 @@ var Peer          = require('peerjs'),
 
 require('three-fly-controls')(THREE);
 
-/*
-require('../node_modules/three/examples/js/renderers/Projector.js')(THREE)
-require('../node_modules/three/examples/js/ImprovedNoise.js');
-*/
+SC.Cosmos = require('./StarsAndCrafts.Cosmos.js');
 
 
 SC.Server = Class.extend({
@@ -55,13 +52,13 @@ SC.Server = Class.extend({
     _server.scene = new THREE.Scene();
 
 
-    _server.cosmos = require('./StarsAndCrafts.Cosmos.js').construct();
-    _server.scene.add( _server.cosmos );
+    _server.cosmos = new SC.Cosmos(_server);
+    _server.scene.add( _server.cosmos.mesh );
 
  
     // stuff
  
-    _server.renderer = new THREE.WebGLRenderer();
+    _server.renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
     _server.renderer.setPixelRatio( window.devicePixelRatio );
     _server.renderer.setSize( window.innerWidth, window.innerHeight );
     container.appendChild( _server.renderer.domElement ); 
@@ -146,11 +143,7 @@ SC.Server = Class.extend({
       _server.camera.lookAt( target );
       */
   
-      if (_server.cosmos) {
-        _server.cosmos.position.x = _server.camera.position.x;
-        _server.cosmos.position.y = _server.camera.position.y;
-        _server.cosmos.position.z = _server.camera.position.z;
-      }
+      if (_server.cosmos) _server.cosmos.update(_server.camera.position);
   
       _server.objects.forEach(function(meteor) {
   

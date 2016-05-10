@@ -4,24 +4,22 @@ module.exports = function(_server) {
 
   // lights
 
+/*
   var dirLight = new THREE.DirectionalLight( 0xffffff, 0.05 );
   dirLight.position.set( 0, 0.2, 0 ).normalize();
   _server.scene.add( dirLight );
 
   dirLight.color.setHSL( 0.1, 0.7, 0.5 );
 
+*/
+
   // lens flares
-  // Not visible for some reason. Maybe they're outside the cosmos?
 
   var textureLoader = new THREE.TextureLoader();
 
   var textureFlare0 = textureLoader.load( "../images/textures/lensflares/lensflare0.png" );
   var textureFlare2 = textureLoader.load( "../images/textures/lensflares/lensflare2.png" );
   var textureFlare3 = textureLoader.load( "../images/textures/lensflares/lensflare3.png" );
-
-  addLight( 0.55, 0.9, 0.5, 5000, 0, -1000 );
-  addLight( 0.08, 0.8, 0.5,    0, 0, -1000 );
-  addLight( 0.995, 0.5, 0.9, 5000, 5000, -1000 );
 
   function lensFlareUpdateCallback( object ) {
 
@@ -47,7 +45,9 @@ module.exports = function(_server) {
     var light = new THREE.PointLight( 0xffffff, 1.5, 2000 );
     light.color.setHSL( h, s, l );
     light.position.set( x, y, z );
+
     _server.scene.add( light );
+
     var flareColor = new THREE.Color( 0xffffff );
     flareColor.setHSL( h, s, l + 0.5 );
     var lensFlare = new THREE.LensFlare( textureFlare0, 700, 0.0, THREE.AdditiveBlending, flareColor );
@@ -64,5 +64,9 @@ module.exports = function(_server) {
     _server.scene.add( lensFlare );
 
   }
+
+  addLight( 0.55,  0.9, 0.5,  300, 0,   -100 );
+  addLight( 0.08,  0.8, 0.5,    0, 0,   -100 );
+  addLight( 0.995, 0.5, 0.9,  300, 300, -100 );
 
 }
