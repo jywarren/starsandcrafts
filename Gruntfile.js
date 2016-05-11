@@ -27,6 +27,12 @@ module.exports = function(grunt) {
                     'src/StarsAndCrafts.Server.js'
                 ],
                 dest: 'dist/starsandcrafts-server.js'
+            },
+            clientdist: {
+                src: [
+                    'src/StarsAndCrafts.Client.js'
+                ],
+                dest: 'dist/starsandcrafts-client.js'
             }
         }
 
@@ -36,7 +42,8 @@ module.exports = function(grunt) {
     grunt.registerTask('default', ['watch']);
 
     grunt.registerTask('build', [
-        'browserify:dist'
+        'browserify:dist',
+        'browserify:clientdist'
     ]);
 
 };
