@@ -65,7 +65,8 @@ SC.Server = Class.extend({
 
 
     // we'll need to diversify Things beyond just meteors, but for now: 
-    _server.meteors = new SC.Thing(_server);
+    _server.thing = new SC.Thing(_server);
+    _server.meteors = _server.thing.meteors;
 
 
     _server.lighting = new SC.Lighting(_server);
@@ -113,6 +114,9 @@ SC.Server = Class.extend({
 
       requestAnimationFrame( _server.animate );
       _server.update();
+
+      // we should call animate on any object that has it:
+      _server.thing.animate();
 
     }
 
