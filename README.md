@@ -39,6 +39,15 @@ http://www.threejsgames.com/extensions/
 
 http://learningthreejs.com/data/2014-01-10-flying-spaceship-minigame/slides/slides/
 
+
+### Models
+
+Comet 67P/Churyumov-Gerasimenko - via Rosetta/ESA: http://www.thingiverse.com/thing:490245
+Ida: http://www.thingiverse.com/thing:56511
+Vesta: http://www.thingiverse.com/thing:42888
+Phobos, Deimos, Eros: http://www.thingiverse.com/thing:4046
+
+
 ### Panoramas
 
 I'm using hi-res NASA panos to make 3d texture cubes for our background. Resources:
