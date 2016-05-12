@@ -7,6 +7,13 @@ module.exports = Class.extend({
 
     var _cosmos = this;
 
+
+    // SUNS
+    _cosmos.lights = [];
+    _cosmos.lights.push( new SC.Star( 0.55, 0.9, 0.5,  90, 30, -50, _server) );
+    _cosmos.lights.push( new SC.Star( 0.15, 0.6, 0.5,  20, 0,  -100 , _server) );
+
+
     // we create a hidden 2d canvas to generate/manipulate textures: 
 
     var texture_placeholder = document.createElement( 'canvas' );
@@ -54,11 +61,13 @@ module.exports = Class.extend({
     _cosmos.mesh.scale.x = - 1;
 
 
-    _cosmos.update = function(position) {
+    _cosmos.update = function() {
 
-      _cosmos.mesh.position.x = position.x;
-      _cosmos.mesh.position.y = position.y;
-      _cosmos.mesh.position.z = position.z;
+      _cosmos.mesh.position.copy(_server.camera.position);
+
+      _cosmos.lights.forEach(function(light) {
+        light.update(_server.camera.position);
+      });
 
     }
 

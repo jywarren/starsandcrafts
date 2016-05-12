@@ -12,7 +12,9 @@ SC.Util      = require('./Util.js');
 SC.Events    = require('./StarsAndCrafts.Events.js');
 SC.Cosmos    = require('./StarsAndCrafts.Cosmos.js');
 SC.Thing     = require('./StarsAndCrafts.Thing.js');
-SC.Lighting  = require('./StarsAndCrafts.Lighting.js');
+SC.Asteroid  = require('./StarsAndCrafts.Asteroid.js');
+SC.Comet     = require('./StarsAndCrafts.Comet.js');
+SC.Star      = require('./StarsAndCrafts.Star.js');
 
 
 SC.Server = Class.extend({
@@ -60,16 +62,19 @@ SC.Server = Class.extend({
  
     // not working: 
  
-    _server.scene.fog = new THREE.Fog( 0x000000, 3500, 15000 );
-    _server.scene.fog.color.setHSL( 0.51, 0.4, 0.01 );
+//    _server.scene.fog = new THREE.Fog( 0x000000, 3500, 15000 );
+//    _server.scene.fog.color.setHSL( 0.51, 0.4, 0.01 );
 
 
-    // we'll need to diversify Things beyond just meteors, but for now: 
-    _server.thing = new SC.Thing(_server);
-    _server.meteors = _server.thing.meteors;
+    // needs debugging in size, trajectory, particle size, cone shape, turbulence on mobile
+    //_server.objects.push(new SC.Comet(_server));
 
 
-    _server.lighting = new SC.Lighting(_server);
+    for ( var i = 0; i < 200; i ++ ) {
+
+      _server.objects.push(new SC.Asteroid(_server));
+
+    }
 
 
     /*
@@ -99,12 +104,14 @@ SC.Server = Class.extend({
  
         console.log(data);
  
-        if (data == "left")        _server.camera.rotation.y += 0.01;
-        if (data == "right")       _server.camera.rotation.y -= 0.01;
-        if (data == "up")          _server.camera.rotation.x += 0.01;
-        if (data == "down")        _server.camera.rotation.x -= 0.01;
-        if (data == "tiltleft")    _server.camera.rotation.z += 0.01;
-        if (data == "tiltright")   _server.camera.rotation.z -= 0.01;
+        if (data == "left")        _server.camera.rotation.y += 0.02;
+        if (data == "right")       _server.camera.rotation.y -= 0.02;
+        if (data == "up")          _server.camera.rotation.x += 0.02;
+        if (data == "down")        _server.camera.rotation.x -= 0.02;
+        if (data == "tiltleft")    _server.camera.rotation.z += 0.02;
+        if (data == "tiltright")   _server.camera.rotation.z -= 0.02;
+        if (data == "forward")    _server.camera.position.z += 1;
+        if (data == "backward")   _server.camera.position.z -= 1;
         
       });
     });
@@ -114,22 +121,18 @@ SC.Server = Class.extend({
 
       requestAnimationFrame( _server.animate );
       _server.update();
-
-      // we should call animate on any object that has it:
-      _server.thing.animate();
-
+  
     }
 
 
     _server.update = function() {
   
-      if (_server.cosmos) _server.cosmos.update(_server.camera.position);
+      if (_server.cosmos) _server.cosmos.update();
   
-      _server.objects.forEach(function(meteor) {
-  
-        meteor.rotation.y += 0.005;
-        meteor.updateMatrix();
-  
+      _server.objects.forEach(function(object) {
+ 
+        if (object.update) object.update();
+ 
       });
   
       _server.controls.update( _server.clock.getDelta() );

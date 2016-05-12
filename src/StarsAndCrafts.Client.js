@@ -2,8 +2,9 @@ StarsAndCrafts = SC = {};
 module.exports = SC;
 
 var Peer          = require('peerjs'),
-    Class         = require('resig-class'),
-    $             = require('jquery');
+    Class         = require('resig-class');
+
+$ = require('jquery');
 
 SC.Client = Class.extend({
 
@@ -53,7 +54,7 @@ SC.Client = Class.extend({
         $('.alert').removeClass('alert-warning');
 
         // should try to make some of above private
-        if (callback) callback();
+        if (callback) callback(conn);
 
       });
  
