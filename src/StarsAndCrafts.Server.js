@@ -6,6 +6,12 @@ var Peer          = require('peerjs'),
     $             = require('jquery'),
     THREE         = require('three');
 
+// inject Three.js
+var Physijs = require('physijs-browserify')(THREE);
+ 
+Physijs.scripts.worker = '../../node_modules/physijs-browserify/physi-worker.js';
+Physijs.scripts.ammo = '../../node_modules/physijs-browserify/examples/js/ammo.js';
+
 require('three-fly-controls')(THREE);
 
 SC.Util      = require('./Util.js');
@@ -22,8 +28,6 @@ SC.Server = Class.extend({
   init: function(container) {
 
     var _server = this;
- 
-// target = new THREE.Vector3();
 
 // cool for viewscreen zooming:
 //  camera.fov -= event.wheelDeltaY * 0.05;
@@ -49,7 +53,7 @@ SC.Server = Class.extend({
     _server.controls.autoForward = false;
     _server.controls.dragToLook = true;
  
-    _server.scene = new THREE.Scene();
+    _server.scene = new Physijs.Scene();
 
     _server.cosmos = new SC.Cosmos(_server);
     _server.scene.add( _server.cosmos.mesh );
@@ -114,15 +118,9 @@ SC.Server = Class.extend({
         if (data == "backward")   _server.camera.position.z -= 1;
         
       });
+
+
     });
-
-
-    _server.animate = function() {
-
-      requestAnimationFrame( _server.animate );
-      _server.update();
-  
-    }
 
 
     _server.update = function() {
@@ -137,9 +135,15 @@ SC.Server = Class.extend({
   
       _server.controls.update( _server.clock.getDelta() );
   
+console.log(      _server.scene.simulate(),'yo');
+
       _server.renderer.render( _server.scene, _server.camera );
 
+      requestAnimationFrame( _server.update );
+
     }
+
+    _server.update();
 
 
   }

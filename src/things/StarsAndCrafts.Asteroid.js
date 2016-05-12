@@ -1,52 +1,60 @@
 var THREE = require('three');
 
+// inject Three.js
+var Physijs = require('physijs-browserify')(THREE);
+ 
+Physijs.scripts.worker = '../../node_modules/physijs-browserify/physi-worker.js';
+Physijs.scripts.ammo = '../../node_modules/physijs-browserify/examples/js/ammo.js';
+
+
 module.exports = StarsAndCrafts.Thing.extend({
 
   // for now, Objects are just mesh.
   init: function(_server) {
 
-    var _meteor = this;
+    var _asteroid = this;
 
     this._super(_server);
  
     var s = Math.random() * 3 + 1;
 
     // create a geometry only if it doesn't already exist; reduce redundancy
-    _server.meteorCube = _server.meteorCube || new THREE.BoxGeometry( s, s, s );
+    _server.asteroidCube = _server.asteroidCube || new THREE.BoxGeometry( s, s, s );
 
     // create a material only if it doesn't already exist; reduce redundancy
-    _server.meteorMaterial = _server.meteorMaterial || new THREE.MeshPhongMaterial({
+    _server.asteroidMaterial = _server.asteroidMaterial || new THREE.MeshPhongMaterial({
       color:     0x222222, 
       specular:  0xffffff, 
       shininess: 10 
     });
 
-    var mesh = new THREE.Mesh( _server.meteorCube, _server.meteorMaterial );
+    //var mesh = new THREE.Mesh( _server.asteroidCube, _server.asteroidMaterial );
+    _asteroid.mesh = new Physijs.BoxMesh( _server.asteroidCube, _server.asteroidMaterial );
 
-    mesh.position.x = 100 * ( 2.0 * Math.random() - 1.0 );
-    mesh.position.y = 10  * ( 2.0 * Math.random() - 1.0 ) - 12; // below the ecliptic
-    mesh.position.z = 100 * ( 2.0 * Math.random() - 1.0 );
-    mesh.rotation.x = Math.random() * Math.PI;
-    mesh.rotation.y = Math.random() * Math.PI;
-    mesh.rotation.z = Math.random() * Math.PI;
+    _asteroid.mesh.position.x = 100 * ( 2.0 * Math.random() - 1.0 );
+    _asteroid.mesh.position.y = 10  * ( 2.0 * Math.random() - 1.0 ) - 12; // below the ecliptic
+    _asteroid.mesh.position.z = 100 * ( 2.0 * Math.random() - 1.0 );
+    _asteroid.mesh.rotation.x = Math.random() * Math.PI;
+    _asteroid.mesh.rotation.y = Math.random() * Math.PI;
+    _asteroid.mesh.rotation.z = Math.random() * Math.PI;
 
-/* this doesn't work; Meshes don't have velocity
-    mesh.velocity.x = Math.random();
-    mesh.velocity.y = Math.random();
-    mesh.velocity.z = Math.random();
-*/
+    // what does this do? 
+    // _asteroid.mesh.setLinearFactor(1,1,1);
 
-    mesh.matrixAutoUpdate = false;
-    mesh.updateMatrix();
+//    _asteroid.mesh.matrixAutoUpdate = false;
+//    _asteroid.mesh.updateMatrix();
 
-    _server.objects.push(mesh);
-    _server.scene.add(mesh);
+    // switch to event/listener model!
+    _server.objects.push(_asteroid.mesh);
+    _server.scene.add(_asteroid.mesh);
 
 
-    _meteor.update = function() {
+    _asteroid.update = function() {
+     
+      _asteroid.mesh.setLinearVelocity( new THREE.Vector3(Math.random() * 100, 10, 10));
+      _asteroid.mesh.setAngularVelocity(new THREE.Vector3(Math.random() * 100, 10, 10));
 
-      mesh.rotation.y += 0.005;
-      mesh.updateMatrix();
+//      _asteroid.mesh.updateMatrix();
 
     }
 
