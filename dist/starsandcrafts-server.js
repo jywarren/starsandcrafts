@@ -54687,142 +54687,6 @@ if (typeof exports !== 'undefined') {
 }
 
 },{}],17:[function(require,module,exports){
-var THREE = require('three');
-
-module.exports = StarsAndCrafts.Thing.extend({
-
-  // for now, Objects are just mesh.
-  init: function(_server) {
-
-    var _meteor = this;
-
-    this._super(_server);
- 
-    var s = Math.random() * 3 + 1;
-
-    // create a geometry only if it doesn't already exist; reduce redundancy
-    _server.meteorCube = _server.meteorCube || new THREE.BoxGeometry( s, s, s );
-
-    // create a material only if it doesn't already exist; reduce redundancy
-    _server.meteorMaterial = _server.meteorMaterial || new THREE.MeshPhongMaterial({
-      color:     0x222222, 
-      specular:  0xffffff, 
-      shininess: 10 
-    });
-
-    var mesh = new THREE.Mesh( _server.meteorCube, _server.meteorMaterial );
-
-    mesh.position.x = 100 * ( 2.0 * Math.random() - 1.0 );
-    mesh.position.y = 10  * ( 2.0 * Math.random() - 1.0 ) - 12; // below the ecliptic
-    mesh.position.z = 100 * ( 2.0 * Math.random() - 1.0 );
-    mesh.rotation.x = Math.random() * Math.PI;
-    mesh.rotation.y = Math.random() * Math.PI;
-    mesh.rotation.z = Math.random() * Math.PI;
-
-/* this doesn't work; Meshes don't have velocity
-    mesh.velocity.x = Math.random();
-    mesh.velocity.y = Math.random();
-    mesh.velocity.z = Math.random();
-*/
-
-    mesh.matrixAutoUpdate = false;
-    mesh.updateMatrix();
-
-    _server.objects.push(mesh);
-    _server.scene.add(mesh);
-
-
-    _meteor.update = function() {
-
-      mesh.rotation.y += 0.005;
-      mesh.updateMatrix();
-
-    }
-
-  }
-
-});
-
-},{"three":16}],18:[function(require,module,exports){
-var THREE = require('three');
-THREE.GPUParticleSystem = require('./lib/GPUParticleSystem.js');
-
-module.exports = StarsAndCrafts.Thing.extend({
-
-  // for now, Objects are just mesh.
-  init: function(_server) {
-
-    var _comet = this;
-
-    this._super(_server);
-
-    // Working from: 
-    // https://github.com/mrdoob/three.js/blob/master/examples/webgl_gpu_particle_system.html
-
-    // The GPU Particle system extends THREE.Object3D, and so you can use it
-    // as you would any other scene graph component.	Particle positions will be
-    // relative to the position of the particle system, but you will probably only need one
-    // system for your whole scene
-
-    _comet.particleSystem = new THREE.GPUParticleSystem({
-    	maxParticles: 25000
-    });
-
-    _server.scene.add(_comet.particleSystem);
-
-    // options passed during each spawned
-    _comet.options = {
-      position: new THREE.Vector3(),
-      positionRandomness: 0.5,
-      velocity: new THREE.Vector3(),
-      velocityRandomness: 0.5,
-      color: 0xffffff,
-      colorRandomness: 0.2,
-      turbulence: 0,
-      lifetime: 2,
-      size: 5,
-      sizeRandomness: 1
-    };
-
-    _comet.options.velocity.x += 1;
-    _comet.options.position.z = 20;
-    _comet.options.position.x = -10;
-    _comet.options.position.y = 10;
-
-    _comet.spawnerOptions = {
-      spawnRate: 15000,
-      horizontalSpeed: 1.5,
-      verticalSpeed: 1.33,
-      timeScale: 1
-    }
-
-    _comet.tick = 0;
-
-    _comet.update = function() {
-
-      var delta = _server.clock.getDelta() * _comet.spawnerOptions.timeScale;
-      _comet.tick += delta;
-
-      for (var x = 0; x < _comet.spawnerOptions.spawnRate * delta; x++) {
-        // Yep, that's really it.	Spawning particles is super cheap, and once you spawn them, the rest of
-        // their lifecycle is handled entirely on the GPU, driven by a time uniform updated below
-        _comet.particleSystem.spawnParticle(_comet.options);
-      }
-
-      _comet.options.position.z -= 1;
-
-      _comet.particleSystem.update(_comet.tick);
-
-    }
-
-
-    return _comet;
-
-  }
-
-});
-
-},{"./lib/GPUParticleSystem.js":25,"three":16}],19:[function(require,module,exports){
 var THREE = require('three'),
     Class = require('resig-class');
 
@@ -54902,7 +54766,7 @@ module.exports = Class.extend({
 
 });
 
-},{"resig-class":14,"three":16}],20:[function(require,module,exports){
+},{"resig-class":14,"three":16}],18:[function(require,module,exports){
 module.exports = function(_server) {
 
     // events
@@ -54931,7 +54795,7 @@ module.exports = function(_server) {
 
 }
 
-},{}],21:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 StarsAndCrafts = SC = {};
 module.exports = SC;
 
@@ -54945,10 +54809,10 @@ require('three-fly-controls')(THREE);
 SC.Util      = require('./Util.js');
 SC.Events    = require('./StarsAndCrafts.Events.js');
 SC.Cosmos    = require('./StarsAndCrafts.Cosmos.js');
-SC.Thing     = require('./StarsAndCrafts.Thing.js');
-SC.Asteroid  = require('./StarsAndCrafts.Asteroid.js');
-SC.Comet     = require('./StarsAndCrafts.Comet.js');
-SC.Star      = require('./StarsAndCrafts.Star.js');
+SC.Thing     = require('./things/StarsAndCrafts.Thing.js');
+SC.Asteroid  = require('./things/StarsAndCrafts.Asteroid.js');
+SC.Comet     = require('./things/StarsAndCrafts.Comet.js');
+SC.Star      = require('./things/StarsAndCrafts.Star.js');
 
 
 SC.Server = Class.extend({
@@ -55080,107 +54944,7 @@ SC.Server = Class.extend({
 
 });
 
-},{"./StarsAndCrafts.Asteroid.js":17,"./StarsAndCrafts.Comet.js":18,"./StarsAndCrafts.Cosmos.js":19,"./StarsAndCrafts.Events.js":20,"./StarsAndCrafts.Star.js":22,"./StarsAndCrafts.Thing.js":23,"./Util.js":24,"jquery":1,"peerjs":6,"resig-class":14,"three":16,"three-fly-controls":15}],22:[function(require,module,exports){
-var THREE = require('three');
-
-module.exports = Class.extend({
-
-
-  init: function(h, s, l, x, y, z, _server) {
-
-    var _star = this;
-
-    _star.position = {
-      x: x,
-      y: y,
-      z: z
-    }
- 
-    var textureLoader = new THREE.TextureLoader();
- 
-    var textureFlare0 = textureLoader.load( "../images/textures/lensflares/lensflare0.png" );
-    var textureFlare2 = textureLoader.load( "../images/textures/lensflares/lensflare2.png" );
-    var textureFlare3 = textureLoader.load( "../images/textures/lensflares/lensflare3.png" );
- 
-    function lensFlareUpdateCallback( object ) {
- 
-      var f, fl = object.lensFlares.length;
-      var flare;
-      var vecX = -object.positionScreen.x * 2;
-      var vecY = -object.positionScreen.y * 2;
- 
-      for( f = 0; f < fl; f++ ) {
-        flare = object.lensFlares[ f ];
-        flare.x = object.positionScreen.x + vecX * flare.distance;
-        flare.y = object.positionScreen.y + vecY * flare.distance;
-        flare.rotation = 0;
-      }
- 
-      object.lensFlares[ 2 ].y += 0.025;
-      object.lensFlares[ 3 ].rotation = object.positionScreen.x * 0.5 + THREE.Math.degToRad( 45 );
- 
-    }
- 
- 
-    _star.light = new THREE.PointLight( 0xffffff, 1.5, 2000 );
-    _star.light.color.setHSL( h, s, l );
-    _star.light.position.set( x, y, z );
-
-    _server.scene.add( _star.light );
-
-
-    var flareColor = new THREE.Color( 0xffffff );
-    flareColor.setHSL( h, s, l + 0.5 );
-
-    _star.lensFlare = new THREE.LensFlare( textureFlare0, 700, 0.0, THREE.AdditiveBlending, flareColor );
-
-    _star.lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
-    _star.lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
-    _star.lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
-    _star.lensFlare.add( textureFlare3, 60,  0.6, THREE.AdditiveBlending );
-    _star.lensFlare.add( textureFlare3, 70,  0.7, THREE.AdditiveBlending );
-    _star.lensFlare.add( textureFlare3, 120, 0.9, THREE.AdditiveBlending );
-    _star.lensFlare.add( textureFlare3, 70,  1.0, THREE.AdditiveBlending );
-    _star.lensFlare.customUpdateCallback = lensFlareUpdateCallback;
-    _star.lensFlare.position.copy( _star.light.position );
-
-    _server.scene.add( _star.lensFlare );
-
-
-    _star.update = function(position) {
-
-      _star.lensFlare.position.x = position.x + _star.position.x;
-      _star.lensFlare.position.y = position.y + _star.position.y;
-      _star.lensFlare.position.z = position.z + _star.position.z;
-
-      _star.light.position.x = position.x + _star.position.x;
-      _star.light.position.y = position.y + _star.position.y;
-      _star.light.position.z = position.z + _star.position.z;
-
-    }
-
- 
-  }
-
-});
-
-},{"three":16}],23:[function(require,module,exports){
-var THREE = require('three');
-
-module.exports = Class.extend({
-
-  // for now, Objects are just meteors
-  init: function(_server) {
-
-    var _thing = this;
-
-    return _thing;
-
-  }
-
-});
-
-},{"three":16}],24:[function(require,module,exports){
+},{"./StarsAndCrafts.Cosmos.js":17,"./StarsAndCrafts.Events.js":18,"./Util.js":20,"./things/StarsAndCrafts.Asteroid.js":22,"./things/StarsAndCrafts.Comet.js":23,"./things/StarsAndCrafts.Star.js":24,"./things/StarsAndCrafts.Thing.js":25,"jquery":1,"peerjs":6,"resig-class":14,"three":16,"three-fly-controls":15}],20:[function(require,module,exports){
 module.exports = {
 
   getUrlHashParameter: function(sParam) {
@@ -55220,7 +54984,7 @@ module.exports = {
 
 }
 
-},{}],25:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 var THREE = require('three');
 /*
  * GPU Particle System
@@ -55730,4 +55494,240 @@ THREE.GPUParticleContainer = function(maxParticles, particleSystem) {
 THREE.GPUParticleContainer.prototype = Object.create(THREE.Object3D.prototype);
 THREE.GPUParticleContainer.prototype.constructor = THREE.GPUParticleContainer;
 
-},{"three":16}]},{},[21]);
+},{"three":16}],22:[function(require,module,exports){
+var THREE = require('three');
+
+module.exports = StarsAndCrafts.Thing.extend({
+
+  // for now, Objects are just mesh.
+  init: function(_server) {
+
+    var _meteor = this;
+
+    this._super(_server);
+ 
+    var s = Math.random() * 3 + 1;
+
+    // create a geometry only if it doesn't already exist; reduce redundancy
+    _server.meteorCube = _server.meteorCube || new THREE.BoxGeometry( s, s, s );
+
+    // create a material only if it doesn't already exist; reduce redundancy
+    _server.meteorMaterial = _server.meteorMaterial || new THREE.MeshPhongMaterial({
+      color:     0x222222, 
+      specular:  0xffffff, 
+      shininess: 10 
+    });
+
+    var mesh = new THREE.Mesh( _server.meteorCube, _server.meteorMaterial );
+
+    mesh.position.x = 100 * ( 2.0 * Math.random() - 1.0 );
+    mesh.position.y = 10  * ( 2.0 * Math.random() - 1.0 ) - 12; // below the ecliptic
+    mesh.position.z = 100 * ( 2.0 * Math.random() - 1.0 );
+    mesh.rotation.x = Math.random() * Math.PI;
+    mesh.rotation.y = Math.random() * Math.PI;
+    mesh.rotation.z = Math.random() * Math.PI;
+
+/* this doesn't work; Meshes don't have velocity
+    mesh.velocity.x = Math.random();
+    mesh.velocity.y = Math.random();
+    mesh.velocity.z = Math.random();
+*/
+
+    mesh.matrixAutoUpdate = false;
+    mesh.updateMatrix();
+
+    _server.objects.push(mesh);
+    _server.scene.add(mesh);
+
+
+    _meteor.update = function() {
+
+      mesh.rotation.y += 0.005;
+      mesh.updateMatrix();
+
+    }
+
+  }
+
+});
+
+},{"three":16}],23:[function(require,module,exports){
+var THREE = require('three');
+THREE.GPUParticleSystem = require('./../lib/GPUParticleSystem.js');
+
+module.exports = StarsAndCrafts.Thing.extend({
+
+  // for now, Objects are just mesh.
+  init: function(_server) {
+
+    var _comet = this;
+
+    this._super(_server);
+
+    // Working from: 
+    // https://github.com/mrdoob/three.js/blob/master/examples/webgl_gpu_particle_system.html
+
+    // The GPU Particle system extends THREE.Object3D, and so you can use it
+    // as you would any other scene graph component.	Particle positions will be
+    // relative to the position of the particle system, but you will probably only need one
+    // system for your whole scene
+
+    _comet.particleSystem = new THREE.GPUParticleSystem({
+    	maxParticles: 25000
+    });
+
+    _server.scene.add(_comet.particleSystem);
+
+    // options passed during each spawned
+    _comet.options = {
+      position: new THREE.Vector3(),
+      positionRandomness: 0.5,
+      velocity: new THREE.Vector3(),
+      velocityRandomness: 0.5,
+      color: 0xffffff,
+      colorRandomness: 0.2,
+      turbulence: 0,
+      lifetime: 2,
+      size: 5,
+      sizeRandomness: 1
+    };
+
+    _comet.options.velocity.x += 1;
+    _comet.options.position.z = 20;
+    _comet.options.position.x = -10;
+    _comet.options.position.y = 10;
+
+    _comet.spawnerOptions = {
+      spawnRate: 15000,
+      horizontalSpeed: 1.5,
+      verticalSpeed: 1.33,
+      timeScale: 1
+    }
+
+    _comet.tick = 0;
+
+    _comet.update = function() {
+
+      var delta = _server.clock.getDelta() * _comet.spawnerOptions.timeScale;
+      _comet.tick += delta;
+
+      for (var x = 0; x < _comet.spawnerOptions.spawnRate * delta; x++) {
+        // Yep, that's really it.	Spawning particles is super cheap, and once you spawn them, the rest of
+        // their lifecycle is handled entirely on the GPU, driven by a time uniform updated below
+        _comet.particleSystem.spawnParticle(_comet.options);
+      }
+
+      _comet.options.position.z -= 1;
+
+      _comet.particleSystem.update(_comet.tick);
+
+    }
+
+
+    return _comet;
+
+  }
+
+});
+
+},{"./../lib/GPUParticleSystem.js":21,"three":16}],24:[function(require,module,exports){
+var THREE = require('three');
+
+module.exports = Class.extend({
+
+
+  init: function(h, s, l, x, y, z, _server) {
+
+    var _star = this;
+
+    _star.position = {
+      x: x,
+      y: y,
+      z: z
+    }
+ 
+    var textureLoader = new THREE.TextureLoader();
+ 
+    var textureFlare0 = textureLoader.load( "../images/textures/lensflares/lensflare0.png" );
+    var textureFlare2 = textureLoader.load( "../images/textures/lensflares/lensflare2.png" );
+    var textureFlare3 = textureLoader.load( "../images/textures/lensflares/lensflare3.png" );
+ 
+    function lensFlareUpdateCallback( object ) {
+ 
+      var f, fl = object.lensFlares.length;
+      var flare;
+      var vecX = -object.positionScreen.x * 2;
+      var vecY = -object.positionScreen.y * 2;
+ 
+      for( f = 0; f < fl; f++ ) {
+        flare = object.lensFlares[ f ];
+        flare.x = object.positionScreen.x + vecX * flare.distance;
+        flare.y = object.positionScreen.y + vecY * flare.distance;
+        flare.rotation = 0;
+      }
+ 
+      object.lensFlares[ 2 ].y += 0.025;
+      object.lensFlares[ 3 ].rotation = object.positionScreen.x * 0.5 + THREE.Math.degToRad( 45 );
+ 
+    }
+ 
+ 
+    _star.light = new THREE.PointLight( 0xffffff, 1.5, 2000 );
+    _star.light.color.setHSL( h, s, l );
+    _star.light.position.set( x, y, z );
+
+    _server.scene.add( _star.light );
+
+
+    var flareColor = new THREE.Color( 0xffffff );
+    flareColor.setHSL( h, s, l + 0.5 );
+
+    _star.lensFlare = new THREE.LensFlare( textureFlare0, 700, 0.0, THREE.AdditiveBlending, flareColor );
+
+    _star.lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
+    _star.lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
+    _star.lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
+    _star.lensFlare.add( textureFlare3, 60,  0.6, THREE.AdditiveBlending );
+    _star.lensFlare.add( textureFlare3, 70,  0.7, THREE.AdditiveBlending );
+    _star.lensFlare.add( textureFlare3, 120, 0.9, THREE.AdditiveBlending );
+    _star.lensFlare.add( textureFlare3, 70,  1.0, THREE.AdditiveBlending );
+    _star.lensFlare.customUpdateCallback = lensFlareUpdateCallback;
+    _star.lensFlare.position.copy( _star.light.position );
+
+    _server.scene.add( _star.lensFlare );
+
+
+    _star.update = function(position) {
+
+      _star.lensFlare.position.x = position.x + _star.position.x;
+      _star.lensFlare.position.y = position.y + _star.position.y;
+      _star.lensFlare.position.z = position.z + _star.position.z;
+
+      _star.light.position.x = position.x + _star.position.x;
+      _star.light.position.y = position.y + _star.position.y;
+      _star.light.position.z = position.z + _star.position.z;
+
+    }
+
+ 
+  }
+
+});
+
+},{"three":16}],25:[function(require,module,exports){
+var THREE = require('three');
+
+module.exports = Class.extend({
+
+  // for now, Objects are just meteors
+  init: function(_server) {
+
+    var _thing = this;
+
+    return _thing;
+
+  }
+
+});
+
+},{"three":16}]},{},[19]);

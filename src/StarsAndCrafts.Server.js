@@ -11,10 +11,10 @@ require('three-fly-controls')(THREE);
 SC.Util      = require('./Util.js');
 SC.Events    = require('./StarsAndCrafts.Events.js');
 SC.Cosmos    = require('./StarsAndCrafts.Cosmos.js');
-SC.Thing     = require('./StarsAndCrafts.Thing.js');
-SC.Asteroid  = require('./StarsAndCrafts.Asteroid.js');
-SC.Comet     = require('./StarsAndCrafts.Comet.js');
-SC.Star      = require('./StarsAndCrafts.Star.js');
+SC.Thing     = require('./things/StarsAndCrafts.Thing.js');
+SC.Asteroid  = require('./things/StarsAndCrafts.Asteroid.js');
+SC.Comet     = require('./things/StarsAndCrafts.Comet.js');
+SC.Star      = require('./things/StarsAndCrafts.Star.js');
 
 
 SC.Server = Class.extend({

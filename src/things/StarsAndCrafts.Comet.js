@@ -1,5 +1,5 @@
 var THREE = require('three');
-THREE.GPUParticleSystem = require('./lib/GPUParticleSystem.js');
+THREE.GPUParticleSystem = require('./../lib/GPUParticleSystem.js');
 
 module.exports = StarsAndCrafts.Thing.extend({
 
