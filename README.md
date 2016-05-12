@@ -39,6 +39,8 @@ http://www.threejsgames.com/extensions/
 
 http://learningthreejs.com/data/2014-01-10-flying-spaceship-minigame/slides/slides/
 
+Physics! https://chandlerprall.github.io/Physijs/
+
 
 ### Models
 
