@@ -10,8 +10,8 @@ module.exports = Class.extend({
 
     // SUNS
     _cosmos.lights = [];
-    _cosmos.lights.push( new SC.Star( 0.55, 0.9, 0.5,  90, 30, -50, _server) );
-    _cosmos.lights.push( new SC.Star( 0.15, 0.6, 0.5,  20, 0,  -100 , _server) );
+//    _cosmos.lights.push( new SC.Star( 0.55, 0.1, 0.5,  90, 30, -50, _server) );
+    _cosmos.lights.push( new SC.Star( 0.15, 0.1, 0.5,  20, 0,  -100 , _server) );
 
 
     // we create a hidden 2d canvas to generate/manipulate textures: 

@@ -18,6 +18,7 @@ SC.Util      = require('./Util.js');
 SC.Events    = require('./StarsAndCrafts.Events.js');
 SC.Cosmos    = require('./StarsAndCrafts.Cosmos.js');
 SC.Thing     = require('./things/StarsAndCrafts.Thing.js');
+SC.Model     = require('./things/StarsAndCrafts.Model.js');
 SC.Asteroid  = require('./things/StarsAndCrafts.Asteroid.js');
 SC.Comet     = require('./things/StarsAndCrafts.Comet.js');
 SC.Star      = require('./things/StarsAndCrafts.Star.js');
@@ -80,6 +81,9 @@ SC.Server = Class.extend({
       _server.objects.push(new SC.Asteroid(_server));
 
     }
+
+    //var comet = new SC.Model('../models/COMET_67P_C-G.stl', _server);
+    var comet = new SC.Model('../models/eros.stl', _server);
 
 
     /*
