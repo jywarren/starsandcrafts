@@ -2,7 +2,8 @@ StarsAndCrafts = SC = {};
 module.exports = SC;
 
 var Peer          = require('peerjs'),
-    Class         = require('resig-class');
+    Class         = require('resig-class'),
+    Keyboard      = require('keyboard-cjs');
 
 $ = require('jquery');
 
@@ -10,9 +11,10 @@ SC.Client = Class.extend({
 
   init: function(callback, options) {
 
-    var _client = this,
-        peer, 
-        conn;
+    var _client = this;
+
+    // https://www.npmjs.com/package/keyboard-cjs
+    _client.keyboard = new Keyboard(window);
  
     var getUrlHashParameter = function(sParam) {
  
@@ -42,19 +44,19 @@ SC.Client = Class.extend({
       $('.alert').addClass('alert-warning');
       $('.alert').removeClass('alert-success');
   
-      peer = new Peer(key + '-helm', {key: 'wapghotvz0s2x1or'});
+      _client.peer = new Peer(key + '-helm', {key: 'wapghotvz0s2x1or'});
   
-      conn = peer.connect(key);
-      console.log('Peer created: ', peer);
+      _client.connection = _client.peer.connect(key);
+      console.log('Peer created: ', _client.peer);
   
-      conn.on('open', function() {
+      _client.connection.on('open', function() {
   
         $('.alert').html('Connected to server ' + key);
         $('.alert').addClass('alert-success');
         $('.alert').removeClass('alert-warning');
 
         // should try to make some of above private
-        if (callback) callback(conn);
+        if (callback) callback(_client.connection, _client.keyboard);
 
       });
  
