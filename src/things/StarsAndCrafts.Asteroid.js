@@ -46,8 +46,20 @@ module.exports = StarsAndCrafts.Thing.extend({
 //    _asteroid.mesh.setLinearFactor(1,1,1);
 //    _asteroid.mesh.setAngularFactor(1,1,1);
 
-    _asteroid.mesh.setLinearVelocity( new THREE.Vector3(Math.random() * 1, 1, 1));
-    _asteroid.mesh.setAngularVelocity(new THREE.Vector3(Math.random() * 1, 1, 1));
+    _asteroid.mesh.setLinearVelocity( 
+      new THREE.Vector3(
+        Math.random() * 2 - 1, 
+        Math.random() * 2 - 1, 
+        Math.random() * 2 - 1
+      )
+    );
+    _asteroid.mesh.setAngularVelocity(
+      new THREE.Vector3(
+        Math.random() * 0.2, 
+        0.2, 
+        0.2
+      )
+    );
 
 /*
     _asteroid.update = function() {

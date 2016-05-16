@@ -104,19 +104,22 @@ SC.Server = Class.extend({
     peer.on('connection', function(conn) {
  
       $('#info .crew').html('Helm connected.');
+
+      var rot = _server.controls.rotationVector,
+          mov = _server.controls.moveVector;
  
       conn.on('data', function(data){
  
         console.log(data);
  
-        if (data == "left")        _server.camera.rotation.y += 0.02;
-        if (data == "right")       _server.camera.rotation.y -= 0.02;
-        if (data == "up")          _server.camera.rotation.x += 0.02;
-        if (data == "down")        _server.camera.rotation.x -= 0.02;
-        if (data == "tiltleft")    _server.camera.rotation.z += 0.02;
-        if (data == "tiltright")   _server.camera.rotation.z -= 0.02;
-        if (data == "forward")    _server.camera.position.z += 1;
-        if (data == "backward")   _server.camera.position.z -= 1;
+        if (data == "left")      rot.y += 0.02;
+        if (data == "right")     rot.y -= 0.02;
+        if (data == "up")        rot.x += 0.02;
+        if (data == "down")      rot.x -= 0.02;
+        if (data == "tiltleft")  rot.z += 0.02;
+        if (data == "tiltright") rot.z -= 0.02;
+        if (data == "forward")   mov.z -= 0.1;
+        if (data == "backward")  mov.z += 0.1;
         
       });
 
