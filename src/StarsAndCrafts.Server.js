@@ -9,8 +9,8 @@ var Peer          = require('peerjs'),
 // inject Three.js
 var Physijs = require('physijs-browserify')(THREE);
  
-Physijs.scripts.worker = '../../node_modules/physijs-browserify/physi-worker.js';
-Physijs.scripts.ammo = '../../node_modules/physijs-browserify/examples/js/ammo.js';
+Physijs.scripts.worker = '../../node_modules/physijs-browserify/libs/physi-worker.js';
+Physijs.scripts.ammo = 'ammo.js';
 
 require('three-fly-controls')(THREE);
 
@@ -54,6 +54,7 @@ SC.Server = Class.extend({
     _server.controls.dragToLook = true;
  
     _server.scene = new Physijs.Scene();
+    _server.scene.setGravity(new THREE.Vector3( 0, 0, 0 ));
 
     _server.cosmos = new SC.Cosmos(_server);
     _server.scene.add( _server.cosmos.mesh );
@@ -134,8 +135,8 @@ SC.Server = Class.extend({
       });
   
       _server.controls.update( _server.clock.getDelta() );
-  
-console.log(      _server.scene.simulate(),'yo');
+
+      _server.scene.simulate();
 
       _server.renderer.render( _server.scene, _server.camera );
 

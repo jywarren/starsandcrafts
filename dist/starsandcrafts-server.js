@@ -56208,8 +56208,8 @@ var Peer          = require('peerjs'),
 // inject Three.js
 var Physijs = require('physijs-browserify')(THREE);
  
-Physijs.scripts.worker = '../../node_modules/physijs-browserify/physi-worker.js';
-Physijs.scripts.ammo = '../../node_modules/physijs-browserify/examples/js/ammo.js';
+Physijs.scripts.worker = '../../node_modules/physijs-browserify/libs/physi-worker.js';
+Physijs.scripts.ammo = 'ammo.js';
 
 require('three-fly-controls')(THREE);
 
@@ -56253,6 +56253,7 @@ SC.Server = Class.extend({
     _server.controls.dragToLook = true;
  
     _server.scene = new Physijs.Scene();
+    _server.scene.setGravity(new THREE.Vector3( 0, 0, 0 ));
 
     _server.cosmos = new SC.Cosmos(_server);
     _server.scene.add( _server.cosmos.mesh );
@@ -56333,8 +56334,8 @@ SC.Server = Class.extend({
       });
   
       _server.controls.update( _server.clock.getDelta() );
-  
-console.log(      _server.scene.simulate(),'yo');
+
+      _server.scene.simulate();
 
       _server.renderer.render( _server.scene, _server.camera );
 
@@ -56905,8 +56906,8 @@ var THREE = require('three');
 // inject Three.js
 var Physijs = require('physijs-browserify')(THREE);
  
-Physijs.scripts.worker = '../../node_modules/physijs-browserify/physi-worker.js';
-Physijs.scripts.ammo = '../../node_modules/physijs-browserify/examples/js/ammo.js';
+Physijs.scripts.worker = '../../node_modules/physijs-browserify/libs/physi-worker.js';
+Physijs.scripts.ammo = 'ammo.js';
 
 
 module.exports = StarsAndCrafts.Thing.extend({
@@ -56940,25 +56941,21 @@ module.exports = StarsAndCrafts.Thing.extend({
     _asteroid.mesh.rotation.y = Math.random() * Math.PI;
     _asteroid.mesh.rotation.z = Math.random() * Math.PI;
 
-    // what does this do? 
-    // _asteroid.mesh.setLinearFactor(1,1,1);
-
-//    _asteroid.mesh.matrixAutoUpdate = false;
-//    _asteroid.mesh.updateMatrix();
-
     // switch to event/listener model!
-    _server.objects.push(_asteroid.mesh);
+    //_server.objects.push(_asteroid.mesh);
     _server.scene.add(_asteroid.mesh);
 
+    // what does this do? 
+//    _asteroid.mesh.setLinearFactor(1,1,1);
+//    _asteroid.mesh.setAngularFactor(1,1,1);
 
+    _asteroid.mesh.setLinearVelocity( new THREE.Vector3(Math.random() * 1, 1, 1));
+    _asteroid.mesh.setAngularVelocity(new THREE.Vector3(Math.random() * 1, 1, 1));
+
+/*
     _asteroid.update = function() {
-     
-      _asteroid.mesh.setLinearVelocity( new THREE.Vector3(Math.random() * 100, 10, 10));
-      _asteroid.mesh.setAngularVelocity(new THREE.Vector3(Math.random() * 100, 10, 10));
-
-//      _asteroid.mesh.updateMatrix();
-
     }
+*/
 
   }
 
