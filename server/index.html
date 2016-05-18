@@ -43,10 +43,14 @@
     <script src="http://webrtc.github.io/adapter/adapter-latest.js"></script>
 
     <script src="../dist/starsandcrafts-server.js"></script>
+    <script src="../dist/starsandcrafts-scenarios.js"></script>
 
     <script>
 
       var server = new StarsAndCrafts.Server();
+
+      SC.Scenarios['eros'](server);
+      SC.Scenarios['asteroids'](server);
 
     </script>
 

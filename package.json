@@ -10,6 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/jywarren/starsandcrafts.git"
   },
+  "license": "AGPL-3.0",
   "dependencies": {
     "resig-class": "~0.1.0",
     "peerjs": "~0.3.14",

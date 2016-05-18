@@ -61,19 +61,23 @@
             conn.send($(this).attr('data-command'));
           });
     
-          key.on('Up',    function(e) { conn.send('up') });
-          key.on('Down',  function(e) { conn.send('down') });
-          key.on('Left',  function(e) { conn.send('left') });
-          key.on('Right', function(e) { conn.send('right') });
-          key.on('Q',     function(e) { conn.send('tiltleft') });
-          key.on('E',     function(e) { conn.send('tiltright') });
-          key.on('W',     function(e) { conn.send('forward') });
-          key.on('S',     function(e) { conn.send('backward') });
+          key.on('Up',    function(e) { conn.send('helm:up') });
+          key.on('Down',  function(e) { conn.send('helm:down') });
+          key.on('Left',  function(e) { conn.send('helm:left') });
+          key.on('Right', function(e) { conn.send('helm:right') });
+          key.on('Q',     function(e) { conn.send('helm:tiltleft') });
+          key.on('E',     function(e) { conn.send('helm:tiltright') });
+          key.on('W',     function(e) { conn.send('helm:forward') });
+          key.on('S',     function(e) { conn.send('helm:backward') });
  
           $('.connect').click(function() {
             connect();
           });
 
+
+        }, {
+
+          role: "helm"
 
         });
 

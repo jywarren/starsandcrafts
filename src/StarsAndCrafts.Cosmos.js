@@ -3,13 +3,19 @@ var THREE = require('three'),
 
 module.exports = Class.extend({
 
-  init: function(_server) {
+  init: function(_server, options) {
 
     var _cosmos = this;
 
+    options = options || {};
+    // path to folder containing:
+    // px.png, nx.png, py.png, ny.png, pz.png, nz.png 
+    options.texture = options.texture || "../images/starmap_g4k-cube/";
+    _cosmos.options = options;
 
     // SUNS
     _cosmos.lights = [];
+    // h, s, l, x, y, z
 //    _cosmos.lights.push( new SC.Star( 0.55, 0.1, 0.5,  90, 30, -50, _server) );
     _cosmos.lights.push( new SC.Star( 0.15, 0.1, 0.5,  20, 0,  -100 , _server) );
 
@@ -44,12 +50,12 @@ module.exports = Class.extend({
  
     var materials = [
  
-      loadTexture( '../images/starmap_g4k-cube/px.png' ), // right
-      loadTexture( '../images/starmap_g4k-cube/nx.png' ), // left
-      loadTexture( '../images/starmap_g4k-cube/py.png' ), // top
-      loadTexture( '../images/starmap_g4k-cube/ny.png' ), // bottom
-      loadTexture( '../images/starmap_g4k-cube/pz.png' ), // back
-      loadTexture( '../images/starmap_g4k-cube/nz.png' )  // front
+      loadTexture( options.texture + 'px.png' ), // right
+      loadTexture( options.texture + 'nx.png' ), // left
+      loadTexture( options.texture + 'py.png' ), // top
+      loadTexture( options.texture + 'ny.png' ), // bottom
+      loadTexture( options.texture + 'pz.png' ), // back
+      loadTexture( options.texture + 'nz.png' )  // front
  
     ];
 
