@@ -56591,13 +56591,19 @@ var THREE = require('three'),
 
 module.exports = Class.extend({
 
-  init: function(_server) {
+  init: function(_server, options) {
 
     var _cosmos = this;
 
+    options = options || {};
+    // path to folder containing:
+    // px.png, nx.png, py.png, ny.png, pz.png, nz.png 
+    options.texture = options.texture || "../images/starmap_g4k-cube/";
+    _cosmos.options = options;
 
     // SUNS
     _cosmos.lights = [];
+    // h, s, l, x, y, z
 //    _cosmos.lights.push( new SC.Star( 0.55, 0.1, 0.5,  90, 30, -50, _server) );
     _cosmos.lights.push( new SC.Star( 0.15, 0.1, 0.5,  20, 0,  -100 , _server) );
 
@@ -56632,12 +56638,12 @@ module.exports = Class.extend({
  
     var materials = [
  
-      loadTexture( '../images/starmap_g4k-cube/px.png' ), // right
-      loadTexture( '../images/starmap_g4k-cube/nx.png' ), // left
-      loadTexture( '../images/starmap_g4k-cube/py.png' ), // top
-      loadTexture( '../images/starmap_g4k-cube/ny.png' ), // bottom
-      loadTexture( '../images/starmap_g4k-cube/pz.png' ), // back
-      loadTexture( '../images/starmap_g4k-cube/nz.png' )  // front
+      loadTexture( options.texture + 'px.png' ), // right
+      loadTexture( options.texture + 'nx.png' ), // left
+      loadTexture( options.texture + 'py.png' ), // top
+      loadTexture( options.texture + 'ny.png' ), // bottom
+      loadTexture( options.texture + 'pz.png' ), // back
+      loadTexture( options.texture + 'nz.png' )  // front
  
     ];
 
@@ -56682,11 +56688,80 @@ module.exports = function(_server) {
 }
 
 },{}],21:[function(require,module,exports){
+var Peer = require('peerjs');
+
+module.exports = SC.Interface = Class.extend({
+
+  // for now, Objects are just meteors
+  init: function(_server, options) {
+
+    var _interface = this;
+
+    _interface.options = options = options || {};
+    _interface.options.role = _interface.options.role || ""; // usually "helm"
+
+    $('#info').append('<span class="' + _interface.options.role + '">*</span>');
+    _interface.dot = $('#info .' + _interface.options.role);
+    _interface.dot.css('color', 'red');
+
+    // peer connecting
+
+    _interface.peer = new Peer(
+      _server.key + "-server-" + _interface.options.role, 
+      { key: 'wapghotvz0s2x1or' }
+    );
+ 
+    _interface.peer.on('connection', function(conn) {
+
+      _interface.dot.css('color', 'green');
+
+      var rot = _server.controls.rotationVector,
+          mov = _server.controls.moveVector;
+ 
+      conn.on('data', function(data){
+ 
+        console.log(data);
+
+        // this API should reflect that at:
+        // https://github.com/jywarren/starsandcrafts/wiki
+
+        var namespace = data.split(':')[0];
+        var command = data.split(':')[1];
+
+        _interface.dot.css('color', 'yellow');
+        setTimeout(function() {
+          _interface.dot.css('color', 'green');
+        }, 50);
+
+        if (namespace == "helm") {
+ 
+          if (command == "left")      rot.y += 0.02;
+          if (command == "right")     rot.y -= 0.02;
+          if (command == "up")        rot.x += 0.02;
+          if (command == "down")      rot.x -= 0.02;
+          if (command == "tiltleft")  rot.z += 0.02;
+          if (command == "tiltright") rot.z -= 0.02;
+          if (command == "forward")   mov.z -= 0.1;
+          if (command == "backward")  mov.z += 0.1;
+
+        }
+
+      });
+
+    });
+    
+
+    return _interface;
+
+  }
+
+});
+
+},{"peerjs":6}],22:[function(require,module,exports){
 StarsAndCrafts = SC = {};
 module.exports = SC;
 
-var Peer          = require('peerjs'),
-    Class         = require('resig-class'),
+var Class         = require('resig-class'),
     $             = require('jquery'),
     THREE         = require('three');
 
@@ -56706,6 +56781,7 @@ SC.Model     = require('./things/StarsAndCrafts.Model.js');
 SC.Asteroid  = require('./things/StarsAndCrafts.Asteroid.js');
 SC.Comet     = require('./things/StarsAndCrafts.Comet.js');
 SC.Star      = require('./things/StarsAndCrafts.Star.js');
+SC.Interface = require('./StarsAndCrafts.Interface.js');
 
 
 SC.Server = Class.extend({
@@ -56729,6 +56805,9 @@ SC.Server = Class.extend({
 
     _server.events = SC.Events(_server);
 
+    _server.key = SC.Util.getUrlHashParameter('key');
+    $('#info .key').html(' | Key: ' + _server.key);
+
     // move to controls class 
     _server.controls = new THREE.FlyControls( _server.camera );
  
@@ -56748,71 +56827,13 @@ SC.Server = Class.extend({
     _server.renderer.setPixelRatio( window.devicePixelRatio );
     _server.renderer.setSize( window.innerWidth, window.innerHeight );
     container.appendChild( _server.renderer.domElement ); 
+
  
- 
-    // not working: 
- 
-//    _server.scene.fog = new THREE.Fog( 0x000000, 3500, 15000 );
-//    _server.scene.fog.color.setHSL( 0.51, 0.4, 0.01 );
-
-
-    // needs debugging in size, trajectory, particle size, cone shape, turbulence on mobile
-    //_server.objects.push(new SC.Comet(_server));
-
-
-    for ( var i = 0; i < 200; i ++ ) {
-
-      _server.objects.push(new SC.Asteroid(_server));
-
-    }
-
-    //var comet = new SC.Model('../models/COMET_67P_C-G.stl', _server);
-    var comet = new SC.Model('../models/eros.stl', _server);
-
-
-    /*
-
     _server.interfaces = [];
 
     _server.interfaces.push(
-      new SC.Interface(_server);
+      new SC.Interface(_server, { role: 'helm' })
     );
-
-    */
-
-    // move to Interface class, pass server so interface instance can move server.camera 
-    // or pass Ship so interface can send commands to Ship
-    // peer connecting
-
-    _server.key = SC.Util.getUrlHashParameter('key');
-    $('#info .key').html(' | Key: ' + _server.key);
-
-    var peer = new Peer(_server.key, {key: 'wapghotvz0s2x1or'});
- 
-    peer.on('connection', function(conn) {
- 
-      $('#info .crew').html('Helm connected.');
-
-      var rot = _server.controls.rotationVector,
-          mov = _server.controls.moveVector;
- 
-      conn.on('data', function(data){
- 
-        console.log(data);
- 
-        if (data == "left")      rot.y += 0.02;
-        if (data == "right")     rot.y -= 0.02;
-        if (data == "up")        rot.x += 0.02;
-        if (data == "down")      rot.x -= 0.02;
-        if (data == "tiltleft")  rot.z += 0.02;
-        if (data == "tiltright") rot.z -= 0.02;
-        if (data == "forward")   mov.z -= 0.1;
-        if (data == "backward")  mov.z += 0.1;
-        
-      });
-
-
-    });
 
 
     _server.update = function() {
@@ -56842,7 +56863,7 @@ SC.Server = Class.extend({
 
 });
 
-},{"./StarsAndCrafts.Cosmos.js":19,"./StarsAndCrafts.Events.js":20,"./Util.js":22,"./things/StarsAndCrafts.Asteroid.js":24,"./things/StarsAndCrafts.Comet.js":25,"./things/StarsAndCrafts.Model.js":26,"./things/StarsAndCrafts.Star.js":27,"./things/StarsAndCrafts.Thing.js":28,"jquery":1,"peerjs":6,"physijs-browserify":14,"resig-class":15,"three":18,"three-fly-controls":16}],22:[function(require,module,exports){
+},{"./StarsAndCrafts.Cosmos.js":19,"./StarsAndCrafts.Events.js":20,"./StarsAndCrafts.Interface.js":21,"./Util.js":23,"./things/StarsAndCrafts.Asteroid.js":25,"./things/StarsAndCrafts.Comet.js":26,"./things/StarsAndCrafts.Model.js":27,"./things/StarsAndCrafts.Star.js":28,"./things/StarsAndCrafts.Thing.js":29,"jquery":1,"physijs-browserify":14,"resig-class":15,"three":18,"three-fly-controls":16}],23:[function(require,module,exports){
 module.exports = {
 
   getUrlHashParameter: function(sParam) {
@@ -56882,7 +56903,7 @@ module.exports = {
 
 }
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 var THREE = require('three');
 /*
  * GPU Particle System
@@ -57392,7 +57413,7 @@ THREE.GPUParticleContainer = function(maxParticles, particleSystem) {
 THREE.GPUParticleContainer.prototype = Object.create(THREE.Object3D.prototype);
 THREE.GPUParticleContainer.prototype.constructor = THREE.GPUParticleContainer;
 
-},{"three":18}],24:[function(require,module,exports){
+},{"three":18}],25:[function(require,module,exports){
 var THREE = require('three');
 
 // inject Three.js
@@ -57465,7 +57486,7 @@ module.exports = StarsAndCrafts.Thing.extend({
 
 });
 
-},{"physijs-browserify":14,"three":18}],25:[function(require,module,exports){
+},{"physijs-browserify":14,"three":18}],26:[function(require,module,exports){
 var THREE = require('three');
 THREE.GPUParticleSystem = require('./../lib/GPUParticleSystem.js');
 
@@ -57544,7 +57565,7 @@ module.exports = StarsAndCrafts.Thing.extend({
 
 });
 
-},{"./../lib/GPUParticleSystem.js":23,"three":18}],26:[function(require,module,exports){
+},{"./../lib/GPUParticleSystem.js":24,"three":18}],27:[function(require,module,exports){
 var THREE = require('three');
 THREE.STLLoader = require('three-stl-loader')(THREE);
 
@@ -57603,7 +57624,7 @@ module.exports = StarsAndCrafts.Model= Class.extend({
 
 }); 
 
-},{"physijs-browserify":14,"three":18,"three-stl-loader":17}],27:[function(require,module,exports){
+},{"physijs-browserify":14,"three":18,"three-stl-loader":17}],28:[function(require,module,exports){
 var THREE = require('three');
 
 module.exports = Class.extend({
@@ -57687,7 +57708,7 @@ module.exports = Class.extend({
 
 });
 
-},{"three":18}],28:[function(require,module,exports){
+},{"three":18}],29:[function(require,module,exports){
 var THREE = require('three');
 
 module.exports = Class.extend({
@@ -57716,4 +57737,4 @@ module.exports = Class.extend({
 
 });
 
-},{"three":18}]},{},[21]);
+},{"three":18}]},{},[22]);

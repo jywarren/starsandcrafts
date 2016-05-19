@@ -1,8 +1,7 @@
 StarsAndCrafts = SC = {};
 module.exports = SC;
 
-var Peer          = require('peerjs'),
-    Class         = require('resig-class'),
+var Class         = require('resig-class'),
     $             = require('jquery'),
     THREE         = require('three');
 
@@ -22,6 +21,7 @@ SC.Model     = require('./things/StarsAndCrafts.Model.js');
 SC.Asteroid  = require('./things/StarsAndCrafts.Asteroid.js');
 SC.Comet     = require('./things/StarsAndCrafts.Comet.js');
 SC.Star      = require('./things/StarsAndCrafts.Star.js');
+SC.Interface = require('./StarsAndCrafts.Interface.js');
 
 
 SC.Server = Class.extend({
@@ -45,6 +45,9 @@ SC.Server = Class.extend({
 
     _server.events = SC.Events(_server);
 
+    _server.key = SC.Util.getUrlHashParameter('key');
+    $('#info .key').html(' | Key: ' + _server.key);
+
     // move to controls class 
     _server.controls = new THREE.FlyControls( _server.camera );
  
@@ -64,71 +67,13 @@ SC.Server = Class.extend({
     _server.renderer.setPixelRatio( window.devicePixelRatio );
     _server.renderer.setSize( window.innerWidth, window.innerHeight );
     container.appendChild( _server.renderer.domElement ); 
+
  
- 
-    // not working: 
- 
-//    _server.scene.fog = new THREE.Fog( 0x000000, 3500, 15000 );
-//    _server.scene.fog.color.setHSL( 0.51, 0.4, 0.01 );
-
-
-    // needs debugging in size, trajectory, particle size, cone shape, turbulence on mobile
-    //_server.objects.push(new SC.Comet(_server));
-
-
-    for ( var i = 0; i < 200; i ++ ) {
-
-      _server.objects.push(new SC.Asteroid(_server));
-
-    }
-
-    //var comet = new SC.Model('../models/COMET_67P_C-G.stl', _server);
-    var comet = new SC.Model('../models/eros.stl', _server);
-
-
-    /*
-
     _server.interfaces = [];
 
     _server.interfaces.push(
-      new SC.Interface(_server);
+      new SC.Interface(_server, { role: 'helm' })
     );
-
-    */
-
-    // move to Interface class, pass server so interface instance can move server.camera 
-    // or pass Ship so interface can send commands to Ship
-    // peer connecting
-
-    _server.key = SC.Util.getUrlHashParameter('key');
-    $('#info .key').html(' | Key: ' + _server.key);
-
-    var peer = new Peer(_server.key, {key: 'wapghotvz0s2x1or'});
- 
-    peer.on('connection', function(conn) {
- 
-      $('#info .crew').html('Helm connected.');
-
-      var rot = _server.controls.rotationVector,
-          mov = _server.controls.moveVector;
- 
-      conn.on('data', function(data){
- 
-        console.log(data);
- 
-        if (data == "left")      rot.y += 0.02;
-        if (data == "right")     rot.y -= 0.02;
-        if (data == "up")        rot.x += 0.02;
-        if (data == "down")      rot.x -= 0.02;
-        if (data == "tiltleft")  rot.z += 0.02;
-        if (data == "tiltright") rot.z -= 0.02;
-        if (data == "forward")   mov.z -= 0.1;
-        if (data == "backward")  mov.z += 0.1;
-        
-      });
-
-
-    });
 
 
     _server.update = function() {

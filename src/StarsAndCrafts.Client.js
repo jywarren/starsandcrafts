@@ -13,8 +13,12 @@ SC.Client = Class.extend({
 
     var _client = this;
 
+    _client.options = options || {};
+    _client.options.role = _client.options.role || ""; // usually "helm" 
+
     // https://www.npmjs.com/package/keyboard-cjs
     _client.keyboard = new Keyboard(window);
+
  
     var getUrlHashParameter = function(sParam) {
  
@@ -38,20 +42,20 @@ SC.Client = Class.extend({
     // peer connecting
     _client.connect = function() {
   
-      var key = getUrlHashParameter('key');
+      _client.key = getUrlHashParameter('key');
  
-      $('.alert').html('Connecting to server ' + key);
+      $('.alert').html('Connecting to server ' + _client.key);
       $('.alert').addClass('alert-warning');
       $('.alert').removeClass('alert-success');
   
-      _client.peer = new Peer(key + '-helm', {key: 'wapghotvz0s2x1or'});
+      _client.peer = new Peer(_client.key + "-" + _client.options.role, {key: 'wapghotvz0s2x1or'});
   
-      _client.connection = _client.peer.connect(key);
+      _client.connection = _client.peer.connect(_client.key + "-server-" + _client.options.role);
       console.log('Peer created: ', _client.peer);
   
       _client.connection.on('open', function() {
   
-        $('.alert').html('Connected to server ' + key);
+        $('.alert').html('Connected to server ' + _client.key);
         $('.alert').addClass('alert-success');
         $('.alert').removeClass('alert-warning');
 

@@ -17,6 +17,86 @@ Demo: http://jywarren.github.io/starsandcrafts/
 
 ****
 
+
+## Scenarios
+
+Stars and Crafts environments are built from `Scenarios` which fill the scene with objects, ships, and storylines. To start a scenario, run it by it's name:
+
+````js
+SC.Scenarios['asteroids'](server);
+````
+
+Scenarios are listed in `/dist/starsandcrafts-scenarios.js` and don't need to be compiled like the rest of the server code (see below). To add one, you just need a unique name, like "12 Parsecs: the Kessel Run" and you can write your scenario using basic S&C components, or loading in your own models via the `SC.Model` importer. Optionally return the things you create if your scnario can be used as a subplot in other scenarios:
+
+````js
+
+  // makes 200 asteroids
+  "asteroids": function(server) {
+
+    var asteroids = [];
+
+    for ( var i = 0; i < 200; i ++ ) {
+
+      asteroids.push(new SC.Asteroid(server));
+
+    }
+
+    server.objects = server.objects.concat(asteroids);
+
+    return asteroids;
+
+  },
+
+````
+
+Once you've added it, you can load it as shown in [the server index.html](https://github.com/jywarren/starsandcrafts/blob/master/server/index.html), or from the browser JavaScript console, as shown above. 
+
+
+## Development
+
+Requirements: NodeJS (https://nodejs.org)
+
+Stars and Crafts has two main codebases: the host "server" and the client (like helm, sensors, etc). 
+
+
+### Client
+
+The client is just a webpage with a peer to peer connection to the server page. To develop a client, all you need to do is make a new "role" in the `roles/` directory, with the `index.html` (copy it from the Helm client, for example). Clients just bind events in the client page to commands sent to the server. An API of available commands will be published soon at https://github.com/jywarren/starsandcrafts/wiki.
+
+````js
+
+helm = new SC.Client(function(conn, key) {
+
+  // on button press:
+  $('.command-up').on('mousedown', function() { conn.send('up') });
+
+  // on key press:
+  key.on('Up',    function(e) { conn.send('up') });
+  key.on('Down',  function(e) { conn.send('down') });
+  key.on('Left',  function(e) { conn.send('left') });
+  key.on('Right', function(e) { conn.send('right') });
+  key.on('Q',     function(e) { conn.send('tiltleft') });
+  key.on('E',     function(e) { conn.send('tiltright') });
+  key.on('W',     function(e) { conn.send('forward') });
+  key.on('S',     function(e) { conn.send('backward') });
+
+});
+
+````
+
+
+### Server
+
+The server is more complex than the client, as it includes the graphics and physics engines. Its code is split up among various class files in the `/src/` directory. To compile a new version to `/dist/starsandcrafts-server.js`, you'll need to get a development environment set up:
+
+1. Clone the repository
+2. Run `npm install`, then `bower install`
+3. Run `grunt build` to build, or `grunt` to watch files in src/ and build continuously. You may need to first run `npm install -g grunt-cli` to get grunt. 
+4. Run `./run` and navigate to http://localhost:8000 to use locally.
+
+
+****
+
 ## Resources
 
 http://www.html5rocks.com/en/tutorials/casestudies/100000stars/
@@ -59,13 +139,3 @@ I'm using hi-res NASA panos to make 3d texture cubes for our background. Resourc
 * starting with NASA Deep Star Maps: https://svs.gsfc.nasa.gov/cgi-bin/details.cgi?aid=3895
 * Also check out http://apod.nasa.gov/apod/ap110903.html
 * Flash-based online version: http://gonchar.me/panorama/
-
-
-## Development
-
-Requirements: NodeJS (https://nodejs.org)
-
-1. Clone the repository
-2. Run `npm install`, then `bower install`
-3. Run `grunt build` to build, or `grunt` to watch files in src/ and build continuously.
-4. Run `./run` and navigate to http://localhost:8000 to use locally.
