@@ -30,18 +30,9 @@
 
     <div id="controls" class="row" style="text-align:center;">
 
-      <p><a class="btn btn-lg btn-default command" data-command="helm:up">Up</a></p>
-      <p>
-        <a class="btn btn-lg btn-default command" data-command="helm:left">Left</a>
-        <a class="btn btn-lg btn-default command" data-command="helm:right">Right</a>
-      </p>
-      <p><a class="btn btn-lg btn-default command" data-command="helm:down">Down</a></p>
-      <p>
-        <a class="btn btn-lg btn-default command" data-command="helm:forward">Forward</a>
-        <a class="btn btn-lg btn-default command" data-command="helm:backward">Backward</a>
-      </p>
-
-      <p>Use the buttons or the arrow keys to navigate the ship.</p>
+      <p><a class="btn btn-lg btn-default command" data-command="sensors:zoom:in">Zoom in</a></p>
+      <p><a class="btn btn-lg btn-default command" data-command="sensors:zoom:out">Zoom out</a></p>
+      <p><a class="btn btn-lg btn-default command" data-command="sensors:zoom:default">Zoom default</a></p>
 
       <p><a class="btn btn-lg btn-default reconnect">Reconnect</a></p>
 
@@ -65,14 +56,9 @@
             conn.send($(this).attr('data-command'));
           });
     
-          key.on('Up',    function(e) { conn.send('helm:up') });
-          key.on('Down',  function(e) { conn.send('helm:down') });
-          key.on('Left',  function(e) { conn.send('helm:left') });
-          key.on('Right', function(e) { conn.send('helm:right') });
-          key.on('Q',     function(e) { conn.send('helm:tiltleft') });
-          key.on('E',     function(e) { conn.send('helm:tiltright') });
-          key.on('W',     function(e) { conn.send('helm:forward') });
-          key.on('S',     function(e) { conn.send('helm:backward') });
+          key.on('=', function(e) { conn.send('sensors:zoom:in') });
+          key.on('-', function(e) { conn.send('sensors:zoom:out') });
+          key.on(' ', function(e) { conn.send('sensors:zoom:default') });
  
           $('.connect').click(function() {
             client.connect();
@@ -81,7 +67,7 @@
 
         }, {
 
-          role: "helm"
+          role: "sensors"
 
         });
 
