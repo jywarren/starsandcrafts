@@ -63,6 +63,28 @@ SC.Client = Class.extend({
         if (callback) callback(_client.connection, _client.keyboard);
 
       });
+
+      _client.connection.on('close', function() {
+ 
+        console.log('connection closed');
+ 
+        $('.alert').html('Disconnected from server ' + _client.key);
+        $('.alert').removeClass('alert-success');
+        $('.alert').addClass('alert-warning');
+ 
+        // _interface.peer.reconnect();
+ 
+      });
+
+      _client.peer.on('close', function() {
+
+        console.log('peer disconnected');
+  
+        $('.alert').html('Disconnected from server ' + _client.key);
+        $('.alert').removeClass('alert-success');
+        $('.alert').addClass('alert-warning');
+
+      });
  
     }
  

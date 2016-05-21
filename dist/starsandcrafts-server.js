@@ -56699,8 +56699,15 @@ module.exports = SC.Interface = Class.extend({
 
     _interface.options = options = options || {};
     _interface.options.role = _interface.options.role || ""; // usually "helm"
+    var markers = {
+      "helm":           "H",
+      "sensors":        "S",
+      "engineering":    "E",
+      "communications": "C",
+      "tactical":       "T"
+    }
 
-    $('#info').append('<span class="' + _interface.options.role + '">*</span>');
+    $('#info').append('<span class="' + _interface.options.role + '">' + markers[_interface.options.role] + '</span>');
     _interface.dot = $('#info .' + _interface.options.role);
     _interface.dot.css('color', 'red');
 
@@ -56727,6 +56734,7 @@ module.exports = SC.Interface = Class.extend({
 
         var namespace = data.split(':')[0];
         var command = data.split(':')[1];
+        var args = data.split(':');
 
         _interface.dot.css('color', 'yellow');
         setTimeout(function() {
@@ -56744,11 +56752,46 @@ module.exports = SC.Interface = Class.extend({
           if (command == "forward")   mov.z -= 0.1;
           if (command == "backward")  mov.z += 0.1;
 
+        } else if (namespace == "sensors") {
+
+          // viewscreen zooming:
+          if (command == "zoom") {
+            if (args[2] == "in")      _server.camera.fov -= 20;
+            if (args[2] == "out")     _server.camera.fov += 20;
+            if (args[2] == "default") _server.camera.fov = 85;
+            if (_server.camera.fov > 85) _server.camera.fov = 85;
+            if (_server.camera.fov < 10) _server.camera.fov = 10;
+            _server.camera.updateProjectionMatrix();
+          }
+
         }
 
       });
 
+
+      conn.on('close', function() {
+ 
+        console.log('connection closed');
+ 
+        _interface.dot.css('color', 'red');
+ 
+        // _interface.peer.reconnect();
+ 
+      });
+
     });
+
+
+    _interface.peer.on('close', function() {
+
+      console.log('peer disconnected');
+
+      _interface.dot.css('color', 'red');
+
+      // _interface.peer.reconnect();
+
+    });
+
     
 
     return _interface;
@@ -56790,10 +56833,6 @@ SC.Server = Class.extend({
 
     var _server = this;
 
-// cool for viewscreen zooming:
-//  camera.fov -= event.wheelDeltaY * 0.05;
-//  camera.updateProjectionMatrix();
-
     // all things here!
     _server.objects = [];
  
@@ -56832,7 +56871,8 @@ SC.Server = Class.extend({
     _server.interfaces = [];
 
     _server.interfaces.push(
-      new SC.Interface(_server, { role: 'helm' })
+      new SC.Interface(_server, { role: 'helm' }),
+      new SC.Interface(_server, { role: 'sensors' })
     );
 
 

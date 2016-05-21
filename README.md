@@ -121,6 +121,11 @@ http://learningthreejs.com/data/2014-01-10-flying-spaceship-minigame/slides/slid
 
 Physics! https://chandlerprall.github.io/Physijs/
 
+http://www.inkfood.com/spacedebris/ - game with engines, explosions, asteroids
+
+Handle dramatic size differences with logarithmic z-buffer: http://threejs.org/examples/#webgl_camera_logarithmicdepthbuffer
+
+Depth of field (for zooming): http://threejs.org/examples/#webgl_postprocessing_dof
 
 ### Models
 

@@ -30,10 +30,6 @@ SC.Server = Class.extend({
 
     var _server = this;
 
-// cool for viewscreen zooming:
-//  camera.fov -= event.wheelDeltaY * 0.05;
-//  camera.updateProjectionMatrix();
-
     // all things here!
     _server.objects = [];
  
@@ -72,7 +68,8 @@ SC.Server = Class.extend({
     _server.interfaces = [];
 
     _server.interfaces.push(
-      new SC.Interface(_server, { role: 'helm' })
+      new SC.Interface(_server, { role: 'helm' }),
+      new SC.Interface(_server, { role: 'sensors' })
     );
 
 
