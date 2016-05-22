@@ -28,7 +28,6 @@ module.exports = StarsAndCrafts.Thing.extend({
       shininess: 10 
     });
 
-    //var mesh = new THREE.Mesh( _server.asteroidCube, _server.asteroidMaterial );
     _asteroid.mesh = new Physijs.BoxMesh( _server.asteroidCube, _server.asteroidMaterial );
 
     _asteroid.mesh.position.x = 100 * ( 2.0 * Math.random() - 1.0 );
@@ -39,7 +38,6 @@ module.exports = StarsAndCrafts.Thing.extend({
     _asteroid.mesh.rotation.z = Math.random() * Math.PI;
 
     // switch to event/listener model!
-    //_server.objects.push(_asteroid.mesh);
     _server.scene.add(_asteroid.mesh);
 
     // what does this do? 

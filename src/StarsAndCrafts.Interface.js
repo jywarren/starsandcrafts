@@ -1,4 +1,5 @@
-var Peer = require('peerjs');
+var Peer  = require('peerjs'),
+    THREE = require('three');
 
 module.exports = SC.Interface = Class.extend({
 
@@ -38,43 +39,7 @@ module.exports = SC.Interface = Class.extend({
       conn.on('data', function(data){
  
         console.log(data);
-
-        // this API should reflect that at:
-        // https://github.com/jywarren/starsandcrafts/wiki
-
-        var namespace = data.split(':')[0];
-        var command = data.split(':')[1];
-        var args = data.split(':');
-
-        _interface.dot.css('color', 'yellow');
-        setTimeout(function() {
-          _interface.dot.css('color', 'green');
-        }, 50);
-
-        if (namespace == "helm") {
- 
-          if (command == "left")      rot.y += 0.02;
-          if (command == "right")     rot.y -= 0.02;
-          if (command == "up")        rot.x += 0.02;
-          if (command == "down")      rot.x -= 0.02;
-          if (command == "tiltleft")  rot.z += 0.02;
-          if (command == "tiltright") rot.z -= 0.02;
-          if (command == "forward")   mov.z -= 0.1;
-          if (command == "backward")  mov.z += 0.1;
-
-        } else if (namespace == "sensors") {
-
-          // viewscreen zooming:
-          if (command == "zoom") {
-            if (args[2] == "in")      _server.camera.fov -= 20;
-            if (args[2] == "out")     _server.camera.fov += 20;
-            if (args[2] == "default") _server.camera.fov = 85;
-            if (_server.camera.fov > 85) _server.camera.fov = 85;
-            if (_server.camera.fov < 10) _server.camera.fov = 10;
-            _server.camera.updateProjectionMatrix();
-          }
-
-        }
+        _interface.run(data);
 
       });
 
@@ -102,6 +67,65 @@ module.exports = SC.Interface = Class.extend({
 
     });
 
+
+    // this API should reflect that at:
+    // https://github.com/jywarren/starsandcrafts/wiki
+    _interface.run = function(data) {
+
+      var namespace = data.split(':')[0];
+      var command = data.split(':')[1];
+      var args = data.split(':');
+
+      _interface.dot.css('color', 'yellow');
+      setTimeout(function() {
+        _interface.dot.css('color', 'green');
+      }, 50);
+
+      if (namespace == "helm") {
+ 
+        if (command == "left")      rot.y += 0.02;
+        if (command == "right")     rot.y -= 0.02;
+        if (command == "up")        rot.x += 0.02;
+        if (command == "down")      rot.x -= 0.02;
+        if (command == "tiltleft")  rot.z += 0.02;
+        if (command == "tiltright") rot.z -= 0.02;
+        if (command == "forward")   mov.z -= 0.1;
+        if (command == "backward")  mov.z += 0.1;
+
+      } else if (namespace == "sensors") {
+
+        // viewscreen zooming:
+        if (command == "zoom") {
+
+          if (args[2] == "in")      _server.camera.fov -= 20;
+          if (args[2] == "out")     _server.camera.fov += 20;
+          if (args[2] == "default") _server.camera.fov = 85;
+          if (_server.camera.fov > 85) _server.camera.fov = 85;
+          if (_server.camera.fov < 10) _server.camera.fov = 10;
+          _server.camera.updateProjectionMatrix();
+
+        }
+
+        if (command == "grid") {
+
+          _interface.grid = _interface.grid || new THREE.Mesh( 
+            new THREE.PlaneGeometry( 10000, 10000 ),
+            new THREE.MeshBasicMaterial( { color: 0xaaaaaa } )
+          );
+          _interface.grid = new THREE.GridHelper(400, 40);
+          _interface.grid.position.y = -10;
+
+          if (args[2] == "on")  _server.scene.add(_interface.grid);
+          if (args[2] == "off") _server.scene.remove(_interface.grid);
+
+        }
+
+      } else if (namespace == "tactical") {
+
+        if (command == "torpedo") new SC.Torpedo(_server); // , _interface.ship);
+
+      }
+    }
     
 
     return _interface;

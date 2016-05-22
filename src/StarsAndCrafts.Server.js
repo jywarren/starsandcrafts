@@ -21,6 +21,7 @@ SC.Model     = require('./things/StarsAndCrafts.Model.js');
 SC.Asteroid  = require('./things/StarsAndCrafts.Asteroid.js');
 SC.Comet     = require('./things/StarsAndCrafts.Comet.js');
 SC.Star      = require('./things/StarsAndCrafts.Star.js');
+SC.Torpedo   = require('./things/StarsAndCrafts.Torpedo.js');
 SC.Interface = require('./StarsAndCrafts.Interface.js');
 
 

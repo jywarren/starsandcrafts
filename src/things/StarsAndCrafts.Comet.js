@@ -8,7 +8,7 @@ module.exports = StarsAndCrafts.Thing.extend({
 
     var _comet = this;
 
-    this._super(_server);
+    _comet._super(_server);
 
     // Working from: 
     // https://github.com/mrdoob/three.js/blob/master/examples/webgl_gpu_particle_system.html

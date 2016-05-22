@@ -4,7 +4,7 @@ THREE.STLLoader = require('three-stl-loader')(THREE);
 // inject Three.js
 var Physijs = require('physijs-browserify')(THREE);
 
-module.exports = StarsAndCrafts.Model= Class.extend({
+module.exports = StarsAndCrafts.Model = Class.extend({
 
 
   init: function(src, _server) {
@@ -45,7 +45,9 @@ module.exports = StarsAndCrafts.Model= Class.extend({
 
       _model.mesh.setAngularVelocity(
         new THREE.Vector3(
-          0.03, 0.03, 0
+          Math.random() * 0.2, 
+          0.2, 
+          0.2
         )
       );
 
