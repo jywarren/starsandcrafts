@@ -1,6 +1,3 @@
-var THREE = require('three'),
-    Class = require('resig-class');
-
 module.exports = StarsAndCrafts.Thing.extend({
 
   init: function(_server, options) {

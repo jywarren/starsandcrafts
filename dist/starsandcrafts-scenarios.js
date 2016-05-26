@@ -5,7 +5,19 @@ SC.Scenarios = {
   // the planetoid/asteroid
   "eros": function(server) {
 
-    eros = new SC.Model('../models/eros.stl', server);
+    eros = new SC.Model('../models/eros.stl', server, function() {
+
+      // models must load first, so we pass a callback function 
+      eros.mesh.setLinearVelocity({ x: -3, y: -2, z: 3});
+
+      eros.mesh.addEventListener( 'collision', function( other_object, linear_velocity, angular_velocity ) {
+        // `this` is the mesh with the event listener
+        // other_object is the object `this` collided with
+        // linear_velocity and angular_velocity are Vector3 objects which represent the velocity of the collision
+        console.log('Bump!');
+      });
+
+    });
 
     return eros;
 

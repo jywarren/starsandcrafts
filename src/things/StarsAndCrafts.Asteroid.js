@@ -1,5 +1,3 @@
-var THREE = require('three');
-
 module.exports = StarsAndCrafts.Thing.extend({
 
   // for now, Objects are just mesh.

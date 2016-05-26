@@ -1,5 +1,4 @@
-var Peer  = require('peerjs'),
-    THREE = require('three');
+var Peer  = require('peerjs');
 
 module.exports = SC.Interface = Class.extend({
 

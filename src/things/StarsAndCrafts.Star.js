@@ -1,7 +1,4 @@
-var THREE = require('three');
-
 module.exports = Class.extend({
-
 
   init: function(h, s, l, x, y, z, _server) {
 
