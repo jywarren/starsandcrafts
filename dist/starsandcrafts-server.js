@@ -56825,6 +56825,7 @@ module.exports = SC.Interface = Class.extend({
 });
 
 },{"peerjs":6,"three":18}],22:[function(require,module,exports){
+(function (global){
 StarsAndCrafts = SC = {};
 module.exports = SC;
 
@@ -56833,7 +56834,7 @@ var Class         = require('resig-class'),
     THREE         = require('three');
 
 // inject Three.js
-var Physijs = require('physijs-browserify')(THREE);
+global.Physijs = require('physijs-browserify')(THREE);
  
 Physijs.scripts.worker = '../../node_modules/physijs-browserify/libs/physi-worker.js';
 Physijs.scripts.ammo = 'ammo.js';
@@ -56928,6 +56929,7 @@ SC.Server = Class.extend({
 
 });
 
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./StarsAndCrafts.Cosmos.js":19,"./StarsAndCrafts.Events.js":20,"./StarsAndCrafts.Interface.js":21,"./Util.js":23,"./things/StarsAndCrafts.Asteroid.js":25,"./things/StarsAndCrafts.Comet.js":26,"./things/StarsAndCrafts.Model.js":27,"./things/StarsAndCrafts.Star.js":28,"./things/StarsAndCrafts.Thing.js":29,"./things/StarsAndCrafts.Torpedo.js":30,"jquery":1,"physijs-browserify":14,"resig-class":15,"three":18,"three-fly-controls":16}],23:[function(require,module,exports){
 module.exports = {
 
@@ -57481,13 +57483,6 @@ THREE.GPUParticleContainer.prototype.constructor = THREE.GPUParticleContainer;
 },{"three":18}],25:[function(require,module,exports){
 var THREE = require('three');
 
-// inject Three.js
-var Physijs = require('physijs-browserify')(THREE);
- 
-Physijs.scripts.worker = '../../node_modules/physijs-browserify/libs/physi-worker.js';
-Physijs.scripts.ammo = 'ammo.js';
-
-
 module.exports = StarsAndCrafts.Thing.extend({
 
   // for now, Objects are just mesh.
@@ -57549,7 +57544,7 @@ module.exports = StarsAndCrafts.Thing.extend({
 
 });
 
-},{"physijs-browserify":14,"three":18}],26:[function(require,module,exports){
+},{"three":18}],26:[function(require,module,exports){
 var THREE = require('three');
 THREE.GPUParticleSystem = require('./../lib/GPUParticleSystem.js');
 
@@ -57632,9 +57627,6 @@ module.exports = StarsAndCrafts.Thing.extend({
 var THREE = require('three');
 THREE.STLLoader = require('three-stl-loader')(THREE);
 
-// inject Three.js
-var Physijs = require('physijs-browserify')(THREE);
-
 module.exports = StarsAndCrafts.Model = Class.extend({
 
 
@@ -57689,7 +57681,7 @@ module.exports = StarsAndCrafts.Model = Class.extend({
 
 }); 
 
-},{"physijs-browserify":14,"three":18,"three-stl-loader":17}],28:[function(require,module,exports){
+},{"three":18,"three-stl-loader":17}],28:[function(require,module,exports){
 var THREE = require('three');
 
 module.exports = Class.extend({
@@ -57806,9 +57798,6 @@ module.exports = Class.extend({
 var THREE = require('three'),
     Class = require('resig-class');
 
-// inject Three.js
-var Physijs = require('physijs-browserify')(THREE);
-
 module.exports = StarsAndCrafts.Thing.extend({
 
   init: function(_server, options) {
@@ -57828,7 +57817,7 @@ module.exports = StarsAndCrafts.Thing.extend({
 
     _server.transparentMaterial = _server.transparentMaterial || new THREE.MeshLambertMaterial({
       color:       0xaaaa00,
-      opacity:     .5, 
+      opacity:     0, 
       transparent: true 
     });
     _server.transparentMaterial.depthWrite = false; 
@@ -57916,4 +57905,4 @@ module.exports = StarsAndCrafts.Thing.extend({
 
 });
 
-},{"physijs-browserify":14,"resig-class":15,"three":18}]},{},[22]);
+},{"resig-class":15,"three":18}]},{},[22]);

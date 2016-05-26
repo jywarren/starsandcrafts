@@ -1,9 +1,6 @@
 var THREE = require('three');
 THREE.STLLoader = require('three-stl-loader')(THREE);
 
-// inject Three.js
-var Physijs = require('physijs-browserify')(THREE);
-
 module.exports = StarsAndCrafts.Model = Class.extend({
 
 

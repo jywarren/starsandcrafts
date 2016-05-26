@@ -6,7 +6,7 @@ var Class         = require('resig-class'),
     THREE         = require('three');
 
 // inject Three.js
-var Physijs = require('physijs-browserify')(THREE);
+global.Physijs = require('physijs-browserify')(THREE);
  
 Physijs.scripts.worker = '../../node_modules/physijs-browserify/libs/physi-worker.js';
 Physijs.scripts.ammo = 'ammo.js';

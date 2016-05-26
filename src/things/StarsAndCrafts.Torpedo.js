@@ -1,9 +1,6 @@
 var THREE = require('three'),
     Class = require('resig-class');
 
-// inject Three.js
-var Physijs = require('physijs-browserify')(THREE);
-
 module.exports = StarsAndCrafts.Thing.extend({
 
   init: function(_server, options) {
@@ -23,7 +20,7 @@ module.exports = StarsAndCrafts.Thing.extend({
 
     _server.transparentMaterial = _server.transparentMaterial || new THREE.MeshLambertMaterial({
       color:       0xaaaa00,
-      opacity:     .5, 
+      opacity:     0, 
       transparent: true 
     });
     _server.transparentMaterial.depthWrite = false; 
