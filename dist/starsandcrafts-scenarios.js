@@ -5,8 +5,7 @@ SC.Scenarios = {
   // the planetoid/asteroid
   "eros": function(server) {
 
-    var eros = new SC.Model('../models/eros.stl', server)
-    server.objects.push(eros);
+    eros = new SC.Model('../models/eros.stl', server);
 
     return eros;
 
@@ -20,11 +19,13 @@ SC.Scenarios = {
 
     for ( var i = 0; i < 200; i ++ ) {
 
-      asteroids.push(new SC.Asteroid(server));
+      var asteroid = new SC.Asteroid(server);
+
+      asteroids.push(asteroid);
+
+      server.objects.push(asteroid);
 
     }
-
-    server.objects = server.objects.concat(asteroids);
 
     return asteroids;
 

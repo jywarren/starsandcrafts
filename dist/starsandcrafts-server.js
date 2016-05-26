@@ -56688,7 +56688,8 @@ module.exports = function(_server) {
 }
 
 },{}],21:[function(require,module,exports){
-var Peer = require('peerjs');
+var Peer  = require('peerjs'),
+    THREE = require('three');
 
 module.exports = SC.Interface = Class.extend({
 
@@ -56728,43 +56729,7 @@ module.exports = SC.Interface = Class.extend({
       conn.on('data', function(data){
  
         console.log(data);
-
-        // this API should reflect that at:
-        // https://github.com/jywarren/starsandcrafts/wiki
-
-        var namespace = data.split(':')[0];
-        var command = data.split(':')[1];
-        var args = data.split(':');
-
-        _interface.dot.css('color', 'yellow');
-        setTimeout(function() {
-          _interface.dot.css('color', 'green');
-        }, 50);
-
-        if (namespace == "helm") {
- 
-          if (command == "left")      rot.y += 0.02;
-          if (command == "right")     rot.y -= 0.02;
-          if (command == "up")        rot.x += 0.02;
-          if (command == "down")      rot.x -= 0.02;
-          if (command == "tiltleft")  rot.z += 0.02;
-          if (command == "tiltright") rot.z -= 0.02;
-          if (command == "forward")   mov.z -= 0.1;
-          if (command == "backward")  mov.z += 0.1;
-
-        } else if (namespace == "sensors") {
-
-          // viewscreen zooming:
-          if (command == "zoom") {
-            if (args[2] == "in")      _server.camera.fov -= 20;
-            if (args[2] == "out")     _server.camera.fov += 20;
-            if (args[2] == "default") _server.camera.fov = 85;
-            if (_server.camera.fov > 85) _server.camera.fov = 85;
-            if (_server.camera.fov < 10) _server.camera.fov = 10;
-            _server.camera.updateProjectionMatrix();
-          }
-
-        }
+        _interface.run(data);
 
       });
 
@@ -56792,6 +56757,65 @@ module.exports = SC.Interface = Class.extend({
 
     });
 
+
+    // this API should reflect that at:
+    // https://github.com/jywarren/starsandcrafts/wiki
+    _interface.run = function(data) {
+
+      var namespace = data.split(':')[0];
+      var command = data.split(':')[1];
+      var args = data.split(':');
+
+      _interface.dot.css('color', 'yellow');
+      setTimeout(function() {
+        _interface.dot.css('color', 'green');
+      }, 50);
+
+      if (namespace == "helm") {
+ 
+        if (command == "left")      rot.y += 0.02;
+        if (command == "right")     rot.y -= 0.02;
+        if (command == "up")        rot.x += 0.02;
+        if (command == "down")      rot.x -= 0.02;
+        if (command == "tiltleft")  rot.z += 0.02;
+        if (command == "tiltright") rot.z -= 0.02;
+        if (command == "forward")   mov.z -= 0.1;
+        if (command == "backward")  mov.z += 0.1;
+
+      } else if (namespace == "sensors") {
+
+        // viewscreen zooming:
+        if (command == "zoom") {
+
+          if (args[2] == "in")      _server.camera.fov -= 20;
+          if (args[2] == "out")     _server.camera.fov += 20;
+          if (args[2] == "default") _server.camera.fov = 85;
+          if (_server.camera.fov > 85) _server.camera.fov = 85;
+          if (_server.camera.fov < 10) _server.camera.fov = 10;
+          _server.camera.updateProjectionMatrix();
+
+        }
+
+        if (command == "grid") {
+
+          _interface.grid = _interface.grid || new THREE.Mesh( 
+            new THREE.PlaneGeometry( 10000, 10000 ),
+            new THREE.MeshBasicMaterial( { color: 0xaaaaaa } )
+          );
+          _interface.grid = new THREE.GridHelper(400, 40);
+          _interface.grid.position.y = -10;
+
+          if (args[2] == "on")  _server.scene.add(_interface.grid);
+          if (args[2] == "off") _server.scene.remove(_interface.grid);
+
+        }
+
+      } else if (namespace == "tactical") {
+
+        if (command == "torpedo") new SC.Torpedo(_server); // , _interface.ship);
+
+      }
+    }
     
 
     return _interface;
@@ -56800,7 +56824,8 @@ module.exports = SC.Interface = Class.extend({
 
 });
 
-},{"peerjs":6}],22:[function(require,module,exports){
+},{"peerjs":6,"three":18}],22:[function(require,module,exports){
+(function (global){
 StarsAndCrafts = SC = {};
 module.exports = SC;
 
@@ -56809,7 +56834,7 @@ var Class         = require('resig-class'),
     THREE         = require('three');
 
 // inject Three.js
-var Physijs = require('physijs-browserify')(THREE);
+global.Physijs = require('physijs-browserify')(THREE);
  
 Physijs.scripts.worker = '../../node_modules/physijs-browserify/libs/physi-worker.js';
 Physijs.scripts.ammo = 'ammo.js';
@@ -56824,6 +56849,7 @@ SC.Model     = require('./things/StarsAndCrafts.Model.js');
 SC.Asteroid  = require('./things/StarsAndCrafts.Asteroid.js');
 SC.Comet     = require('./things/StarsAndCrafts.Comet.js');
 SC.Star      = require('./things/StarsAndCrafts.Star.js');
+SC.Torpedo   = require('./things/StarsAndCrafts.Torpedo.js');
 SC.Interface = require('./StarsAndCrafts.Interface.js');
 
 
@@ -56903,7 +56929,8 @@ SC.Server = Class.extend({
 
 });
 
-},{"./StarsAndCrafts.Cosmos.js":19,"./StarsAndCrafts.Events.js":20,"./StarsAndCrafts.Interface.js":21,"./Util.js":23,"./things/StarsAndCrafts.Asteroid.js":25,"./things/StarsAndCrafts.Comet.js":26,"./things/StarsAndCrafts.Model.js":27,"./things/StarsAndCrafts.Star.js":28,"./things/StarsAndCrafts.Thing.js":29,"jquery":1,"physijs-browserify":14,"resig-class":15,"three":18,"three-fly-controls":16}],23:[function(require,module,exports){
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./StarsAndCrafts.Cosmos.js":19,"./StarsAndCrafts.Events.js":20,"./StarsAndCrafts.Interface.js":21,"./Util.js":23,"./things/StarsAndCrafts.Asteroid.js":25,"./things/StarsAndCrafts.Comet.js":26,"./things/StarsAndCrafts.Model.js":27,"./things/StarsAndCrafts.Star.js":28,"./things/StarsAndCrafts.Thing.js":29,"./things/StarsAndCrafts.Torpedo.js":30,"jquery":1,"physijs-browserify":14,"resig-class":15,"three":18,"three-fly-controls":16}],23:[function(require,module,exports){
 module.exports = {
 
   getUrlHashParameter: function(sParam) {
@@ -57456,13 +57483,6 @@ THREE.GPUParticleContainer.prototype.constructor = THREE.GPUParticleContainer;
 },{"three":18}],25:[function(require,module,exports){
 var THREE = require('three');
 
-// inject Three.js
-var Physijs = require('physijs-browserify')(THREE);
- 
-Physijs.scripts.worker = '../../node_modules/physijs-browserify/libs/physi-worker.js';
-Physijs.scripts.ammo = 'ammo.js';
-
-
 module.exports = StarsAndCrafts.Thing.extend({
 
   // for now, Objects are just mesh.
@@ -57484,7 +57504,6 @@ module.exports = StarsAndCrafts.Thing.extend({
       shininess: 10 
     });
 
-    //var mesh = new THREE.Mesh( _server.asteroidCube, _server.asteroidMaterial );
     _asteroid.mesh = new Physijs.BoxMesh( _server.asteroidCube, _server.asteroidMaterial );
 
     _asteroid.mesh.position.x = 100 * ( 2.0 * Math.random() - 1.0 );
@@ -57495,7 +57514,6 @@ module.exports = StarsAndCrafts.Thing.extend({
     _asteroid.mesh.rotation.z = Math.random() * Math.PI;
 
     // switch to event/listener model!
-    //_server.objects.push(_asteroid.mesh);
     _server.scene.add(_asteroid.mesh);
 
     // what does this do? 
@@ -57526,7 +57544,7 @@ module.exports = StarsAndCrafts.Thing.extend({
 
 });
 
-},{"physijs-browserify":14,"three":18}],26:[function(require,module,exports){
+},{"three":18}],26:[function(require,module,exports){
 var THREE = require('three');
 THREE.GPUParticleSystem = require('./../lib/GPUParticleSystem.js');
 
@@ -57537,7 +57555,7 @@ module.exports = StarsAndCrafts.Thing.extend({
 
     var _comet = this;
 
-    this._super(_server);
+    _comet._super(_server);
 
     // Working from: 
     // https://github.com/mrdoob/three.js/blob/master/examples/webgl_gpu_particle_system.html
@@ -57609,10 +57627,7 @@ module.exports = StarsAndCrafts.Thing.extend({
 var THREE = require('three');
 THREE.STLLoader = require('three-stl-loader')(THREE);
 
-// inject Three.js
-var Physijs = require('physijs-browserify')(THREE);
-
-module.exports = StarsAndCrafts.Model= Class.extend({
+module.exports = StarsAndCrafts.Model = Class.extend({
 
 
   init: function(src, _server) {
@@ -57653,7 +57668,9 @@ module.exports = StarsAndCrafts.Model= Class.extend({
 
       _model.mesh.setAngularVelocity(
         new THREE.Vector3(
-          0.03, 0.03, 0
+          Math.random() * 0.2, 
+          0.2, 
+          0.2
         )
       );
 
@@ -57664,7 +57681,7 @@ module.exports = StarsAndCrafts.Model= Class.extend({
 
 }); 
 
-},{"physijs-browserify":14,"three":18,"three-stl-loader":17}],28:[function(require,module,exports){
+},{"three":18,"three-stl-loader":17}],28:[function(require,module,exports){
 var THREE = require('three');
 
 module.exports = Class.extend({
@@ -57777,4 +57794,115 @@ module.exports = Class.extend({
 
 });
 
-},{"three":18}]},{},[22]);
+},{"three":18}],30:[function(require,module,exports){
+var THREE = require('three'),
+    Class = require('resig-class');
+
+module.exports = StarsAndCrafts.Thing.extend({
+
+  init: function(_server, options) {
+
+    var _torpedo = this;
+
+    _torpedo.options = options || {};
+
+    // _torpedo._super(_server);
+
+    var h = 0,
+        s = 1,
+        l = 0.1;
+
+    // create a geometry only if it doesn't already exist; reduce redundancy
+    _server.torpedoCube = _server.torpedoCube || new THREE.BoxGeometry( 1, 1, 1 );
+
+    _server.transparentMaterial = _server.transparentMaterial || new THREE.MeshLambertMaterial({
+      color:       0xaaaa00,
+      opacity:     0, 
+      transparent: true 
+    });
+    _server.transparentMaterial.depthWrite = false; 
+
+    _torpedo.mesh = new Physijs.BoxMesh(
+                      _server.torpedoCube, 
+                      _server.transparentMaterial
+    );
+
+    _torpedo.mesh.position.set( 0, 0, -10 );
+
+    _server.scene.add( _torpedo.mesh );
+/*
+    _torpedo.mesh.setLinearVelocity( 
+      new THREE.Vector3(
+        Math.random() * 2 - 1, 
+        Math.random() * 2 - 1, 
+        Math.random() * 2 - 2
+      )
+    );
+*/
+ 
+    var textureLoader = new THREE.TextureLoader();
+ 
+    var textureFlare0 = textureLoader.load( "../images/textures/lensflares/lensflare0.png" );
+    var textureFlare2 = textureLoader.load( "../images/textures/lensflares/lensflare2.png" );
+    var textureFlare3 = textureLoader.load( "../images/textures/lensflares/lensflare3.png" );
+ 
+    function lensFlareUpdateCallback( object ) {
+ 
+      var f, fl = object.lensFlares.length;
+      var flare;
+      var vecX = -object.positionScreen.x * 2;
+      var vecY = -object.positionScreen.y * 2;
+ 
+      for( f = 0; f < fl; f++ ) {
+        flare = object.lensFlares[ f ];
+        flare.x = object.positionScreen.x + vecX * flare.distance;
+        flare.y = object.positionScreen.y + vecY * flare.distance;
+        flare.rotation = 0;
+      }
+ 
+      object.lensFlares[ 2 ].y += 0.025;
+      object.lensFlares[ 3 ].rotation = object.positionScreen.x * 0.5 + THREE.Math.degToRad( 45 );
+ 
+    }
+ 
+ 
+    _torpedo.light = new THREE.PointLight( 0xffffff, 1.5, 2000 );
+    _torpedo.light.color.setHSL( h, s, l );
+    _torpedo.light.position.copy( _torpedo.mesh );
+
+    _server.scene.add( _torpedo.light );
+
+
+    var flareColor = new THREE.Color( 0xffffff );
+    flareColor.setHSL( h, s, l + 0.5 );
+
+    _torpedo.lensFlare = new THREE.LensFlare( textureFlare0, 700, 0.0, THREE.AdditiveBlending, flareColor );
+
+    _torpedo.lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
+    _torpedo.lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
+    _torpedo.lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
+    _torpedo.lensFlare.add( textureFlare3, 60,  0.6, THREE.AdditiveBlending );
+    _torpedo.lensFlare.add( textureFlare3, 70,  0.7, THREE.AdditiveBlending );
+    _torpedo.lensFlare.add( textureFlare3, 120, 0.9, THREE.AdditiveBlending );
+    _torpedo.lensFlare.add( textureFlare3, 70,  1.0, THREE.AdditiveBlending );
+    _torpedo.lensFlare.customUpdateCallback = lensFlareUpdateCallback;
+    _torpedo.lensFlare.position.copy( _torpedo.light.position );
+
+    _server.scene.add( _torpedo.lensFlare );
+
+
+    _server.objects.push( _torpedo );
+
+
+    _torpedo.update = function(position) {
+
+      _torpedo.lensFlare.position.copy( _torpedo.mesh.position );
+      _torpedo.light.position.copy( _torpedo.mesh.position );
+
+    }
+
+  }
+
+});
+
+},{"resig-class":15,"three":18}]},{},[22]);
