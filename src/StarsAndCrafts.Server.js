@@ -1,11 +1,10 @@
 StarsAndCrafts = SC = {};
 module.exports = SC;
 
-var Class         = require('resig-class'),
-    $             = require('jquery'),
-    THREE         = require('three');
-
-// inject Three.js
+var $ = require('jquery');
+    
+global.Class   = require('resig-class');
+global.THREE   = require('three');
 global.Physijs = require('physijs-browserify')(THREE);
  
 Physijs.scripts.worker = '../../node_modules/physijs-browserify/libs/physi-worker.js';
@@ -21,6 +20,7 @@ SC.Model     = require('./things/StarsAndCrafts.Model.js');
 SC.Asteroid  = require('./things/StarsAndCrafts.Asteroid.js');
 SC.Comet     = require('./things/StarsAndCrafts.Comet.js');
 SC.Star      = require('./things/StarsAndCrafts.Star.js');
+SC.Ship      = require('./things/StarsAndCrafts.Ship.js');
 SC.Torpedo   = require('./things/StarsAndCrafts.Torpedo.js');
 SC.Interface = require('./StarsAndCrafts.Interface.js');
 

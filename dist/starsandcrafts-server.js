@@ -56586,9 +56586,6 @@ if (typeof exports !== 'undefined') {
 }
 
 },{}],19:[function(require,module,exports){
-var THREE = require('three'),
-    Class = require('resig-class');
-
 module.exports = Class.extend({
 
   init: function(_server, options) {
@@ -56671,7 +56668,7 @@ module.exports = Class.extend({
 
 });
 
-},{"resig-class":15,"three":18}],20:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 module.exports = function(_server) {
 
   onWindowResize = function() {
@@ -56688,8 +56685,7 @@ module.exports = function(_server) {
 }
 
 },{}],21:[function(require,module,exports){
-var Peer  = require('peerjs'),
-    THREE = require('three');
+var Peer  = require('peerjs');
 
 module.exports = SC.Interface = Class.extend({
 
@@ -56824,16 +56820,15 @@ module.exports = SC.Interface = Class.extend({
 
 });
 
-},{"peerjs":6,"three":18}],22:[function(require,module,exports){
+},{"peerjs":6}],22:[function(require,module,exports){
 (function (global){
 StarsAndCrafts = SC = {};
 module.exports = SC;
 
-var Class         = require('resig-class'),
-    $             = require('jquery'),
-    THREE         = require('three');
-
-// inject Three.js
+var $ = require('jquery');
+    
+global.Class   = require('resig-class');
+global.THREE   = require('three');
 global.Physijs = require('physijs-browserify')(THREE);
  
 Physijs.scripts.worker = '../../node_modules/physijs-browserify/libs/physi-worker.js';
@@ -56849,6 +56844,7 @@ SC.Model     = require('./things/StarsAndCrafts.Model.js');
 SC.Asteroid  = require('./things/StarsAndCrafts.Asteroid.js');
 SC.Comet     = require('./things/StarsAndCrafts.Comet.js');
 SC.Star      = require('./things/StarsAndCrafts.Star.js');
+SC.Ship      = require('./things/StarsAndCrafts.Ship.js');
 SC.Torpedo   = require('./things/StarsAndCrafts.Torpedo.js');
 SC.Interface = require('./StarsAndCrafts.Interface.js');
 
@@ -56930,7 +56926,7 @@ SC.Server = Class.extend({
 });
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./StarsAndCrafts.Cosmos.js":19,"./StarsAndCrafts.Events.js":20,"./StarsAndCrafts.Interface.js":21,"./Util.js":23,"./things/StarsAndCrafts.Asteroid.js":25,"./things/StarsAndCrafts.Comet.js":26,"./things/StarsAndCrafts.Model.js":27,"./things/StarsAndCrafts.Star.js":28,"./things/StarsAndCrafts.Thing.js":29,"./things/StarsAndCrafts.Torpedo.js":30,"jquery":1,"physijs-browserify":14,"resig-class":15,"three":18,"three-fly-controls":16}],23:[function(require,module,exports){
+},{"./StarsAndCrafts.Cosmos.js":19,"./StarsAndCrafts.Events.js":20,"./StarsAndCrafts.Interface.js":21,"./Util.js":23,"./things/StarsAndCrafts.Asteroid.js":25,"./things/StarsAndCrafts.Comet.js":26,"./things/StarsAndCrafts.Model.js":27,"./things/StarsAndCrafts.Ship.js":28,"./things/StarsAndCrafts.Star.js":29,"./things/StarsAndCrafts.Thing.js":30,"./things/StarsAndCrafts.Torpedo.js":31,"jquery":1,"physijs-browserify":14,"resig-class":15,"three":18,"three-fly-controls":16}],23:[function(require,module,exports){
 module.exports = {
 
   getUrlHashParameter: function(sParam) {
@@ -57481,8 +57477,6 @@ THREE.GPUParticleContainer.prototype = Object.create(THREE.Object3D.prototype);
 THREE.GPUParticleContainer.prototype.constructor = THREE.GPUParticleContainer;
 
 },{"three":18}],25:[function(require,module,exports){
-var THREE = require('three');
-
 module.exports = StarsAndCrafts.Thing.extend({
 
   // for now, Objects are just mesh.
@@ -57544,8 +57538,7 @@ module.exports = StarsAndCrafts.Thing.extend({
 
 });
 
-},{"three":18}],26:[function(require,module,exports){
-var THREE = require('three');
+},{}],26:[function(require,module,exports){
 THREE.GPUParticleSystem = require('./../lib/GPUParticleSystem.js');
 
 module.exports = StarsAndCrafts.Thing.extend({
@@ -57623,17 +57616,16 @@ module.exports = StarsAndCrafts.Thing.extend({
 
 });
 
-},{"./../lib/GPUParticleSystem.js":24,"three":18}],27:[function(require,module,exports){
-var THREE = require('three');
+},{"./../lib/GPUParticleSystem.js":24}],27:[function(require,module,exports){
 THREE.STLLoader = require('three-stl-loader')(THREE);
 
-module.exports = StarsAndCrafts.Model = Class.extend({
+module.exports = StarsAndCrafts.Model = StarsAndCrafts.Thing.extend({
 
-
-  init: function(src, _server) {
+  init: function(src, _server, _callback) {
 
     var _model = this;
     _model.src = src || '../models/COMET_67P_C-G.stl';
+    _model.callback = _callback;
 
 
     var manager = new THREE.LoadingManager();
@@ -57674,6 +57666,8 @@ module.exports = StarsAndCrafts.Model = Class.extend({
         )
       );
 
+      if (_model.callback) _model.callback();
+
     });
 
 
@@ -57681,11 +57675,19 @@ module.exports = StarsAndCrafts.Model = Class.extend({
 
 }); 
 
-},{"three":18,"three-stl-loader":17}],28:[function(require,module,exports){
-var THREE = require('three');
+},{"three-stl-loader":17}],28:[function(require,module,exports){
+module.exports = StarsAndCrafts.Thing.extend({
 
+  init: function(_server) {
+
+    var _ship = this;
+ 
+  }
+
+});
+
+},{}],29:[function(require,module,exports){
 module.exports = Class.extend({
-
 
   init: function(h, s, l, x, y, z, _server) {
 
@@ -57765,10 +57767,8 @@ module.exports = Class.extend({
 
 });
 
-},{"three":18}],29:[function(require,module,exports){
-var THREE = require('three');
-
-module.exports = Class.extend({
+},{}],30:[function(require,module,exports){
+module.exports = StarsAndCrafts.Thing = Class.extend({
 
   // for now, Objects are just meteors
   init: function(_server, options) {
@@ -57776,14 +57776,18 @@ module.exports = Class.extend({
     var _thing = this;
 
     _thing.options = options = options || {};
+    _thing.options.collidable = true;
 
-    if (options.collidable && _thing.mesh) {
+    if (_thing.options.collidable && _thing.mesh) {
+
+      console.log('listening for collisions');
 
       // https://github.com/chandlerprall/Physijs/wiki/Callbacks-&-Events
       _thing.mesh.addEventListener( 'collision', function( other_object, linear_velocity, angular_velocity ) {
         // `this` is the mesh with the event listener
         // other_object is the object `this` collided with
         // linear_velocity and angular_velocity are Vector3 objects which represent the velocity of the collision
+        console.log('Bump!');
       });
 
     }
@@ -57794,10 +57798,7 @@ module.exports = Class.extend({
 
 });
 
-},{"three":18}],30:[function(require,module,exports){
-var THREE = require('three'),
-    Class = require('resig-class');
-
+},{}],31:[function(require,module,exports){
 module.exports = StarsAndCrafts.Thing.extend({
 
   init: function(_server, options) {
@@ -57905,4 +57906,4 @@ module.exports = StarsAndCrafts.Thing.extend({
 
 });
 
-},{"resig-class":15,"three":18}]},{},[22]);
+},{}]},{},[22]);

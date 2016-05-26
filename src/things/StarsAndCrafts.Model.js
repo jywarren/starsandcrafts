@@ -1,13 +1,12 @@
-var THREE = require('three');
 THREE.STLLoader = require('three-stl-loader')(THREE);
 
-module.exports = StarsAndCrafts.Model = Class.extend({
+module.exports = StarsAndCrafts.Model = StarsAndCrafts.Thing.extend({
 
-
-  init: function(src, _server) {
+  init: function(src, _server, _callback) {
 
     var _model = this;
     _model.src = src || '../models/COMET_67P_C-G.stl';
+    _model.callback = _callback;
 
 
     var manager = new THREE.LoadingManager();
@@ -47,6 +46,8 @@ module.exports = StarsAndCrafts.Model = Class.extend({
           0.2
         )
       );
+
+      if (_model.callback) _model.callback();
 
     });
 
