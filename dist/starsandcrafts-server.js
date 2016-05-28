@@ -56696,6 +56696,7 @@ module.exports = SC.Interface = Class.extend({
 
     _interface.options = options = options || {};
     _interface.options.role = _interface.options.role || ""; // usually "helm"
+
     var markers = {
       "helm":           "H",
       "sensors":        "S",
@@ -56703,6 +56704,9 @@ module.exports = SC.Interface = Class.extend({
       "communications": "C",
       "tactical":       "T"
     }
+
+    var rot = _server.controls.rotationVector,
+        mov = _server.controls.moveVector;
 
     $('#info').append('<span class="' + _interface.options.role + '">' + markers[_interface.options.role] + '</span>');
     _interface.dot = $('#info .' + _interface.options.role);
@@ -56718,9 +56722,6 @@ module.exports = SC.Interface = Class.extend({
     _interface.peer.on('connection', function(conn) {
 
       _interface.dot.css('color', 'green');
-
-      var rot = _server.controls.rotationVector,
-          mov = _server.controls.moveVector;
  
       conn.on('data', function(data){
  
@@ -56808,7 +56809,7 @@ module.exports = SC.Interface = Class.extend({
 
       } else if (namespace == "tactical") {
 
-        if (command == "torpedo") new SC.Torpedo(_server); // , _interface.ship);
+        if (command == "torpedo") _server.ship.torpedo();
 
       }
     }
@@ -56889,12 +56890,14 @@ SC.Server = Class.extend({
     _server.renderer.setSize( window.innerWidth, window.innerHeight );
     container.appendChild( _server.renderer.domElement ); 
 
- 
+    _server.ship = new SC.Ship(_server);
+
     _server.interfaces = [];
 
     _server.interfaces.push(
       new SC.Interface(_server, { role: 'helm' }),
-      new SC.Interface(_server, { role: 'sensors' })
+      new SC.Interface(_server, { role: 'sensors' }),
+      new SC.Interface(_server, { role: 'tactical' })
     );
 
 
@@ -56921,7 +56924,18 @@ SC.Server = Class.extend({
     _server.update();
 
 
+  },
+
+  push: function( pusher, pushed, force ) {
+
+    var zVec = new THREE.Vector3( 0, 0, -force );
+
+    zVec.applyQuaternion( pusher.quaternion );
+
+    pushed.setLinearVelocity( zVec );
+
   }
+
 
 });
 
@@ -57681,6 +57695,21 @@ module.exports = StarsAndCrafts.Thing.extend({
   init: function(_server) {
 
     var _ship = this;
+
+    _ship.torpedo = function(xOffset, yOffset) {
+
+      xOffset = xOffset || 10;
+      yOffset = yOffset || 10;
+
+      _torpedo = new SC.Torpedo(_server);
+ 
+      _torpedo.mesh.position.copy(_server.camera.position);
+      _torpedo.mesh.position.y -= yOffset;
+      _torpedo.mesh.position.x += xOffset;
+ 
+      server.push(_server.camera, _torpedo.mesh, 50);
+
+    }
  
   }
 
@@ -57828,18 +57857,9 @@ module.exports = StarsAndCrafts.Thing.extend({
                       _server.transparentMaterial
     );
 
-    _torpedo.mesh.position.set( 0, 0, -10 );
+    _torpedo.mesh.position.set( 0, 0, 0 );
 
     _server.scene.add( _torpedo.mesh );
-/*
-    _torpedo.mesh.setLinearVelocity( 
-      new THREE.Vector3(
-        Math.random() * 2 - 1, 
-        Math.random() * 2 - 1, 
-        Math.random() * 2 - 2
-      )
-    );
-*/
  
     var textureLoader = new THREE.TextureLoader();
  
@@ -57894,6 +57914,31 @@ module.exports = StarsAndCrafts.Thing.extend({
 
     _server.objects.push( _torpedo );
 
+
+    if (_torpedo.options.collidable && _torpedo.mesh) {
+
+      _torpedo.mesh.addEventListener( 'collision', function( other_object, linear_velocity, angular_velocity ) {
+        console.log('Boom!!');
+      });
+
+    }
+
+
+    setTimeout(function() {
+
+      _torpedo.remove();
+
+    }, 5000);
+
+
+    _torpedo.remove = function() {
+
+      server.objects.splice(server.objects.indexOf(_torpedo), 1);
+      server.scene.remove(_torpedo.lensFlare);
+      server.scene.remove(_torpedo.light);
+      server.scene.remove(_torpedo.mesh);
+
+    }
 
     _torpedo.update = function(position) {
 

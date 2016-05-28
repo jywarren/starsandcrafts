@@ -9,6 +9,7 @@ module.exports = SC.Interface = Class.extend({
 
     _interface.options = options = options || {};
     _interface.options.role = _interface.options.role || ""; // usually "helm"
+
     var markers = {
       "helm":           "H",
       "sensors":        "S",
@@ -16,6 +17,9 @@ module.exports = SC.Interface = Class.extend({
       "communications": "C",
       "tactical":       "T"
     }
+
+    var rot = _server.controls.rotationVector,
+        mov = _server.controls.moveVector;
 
     $('#info').append('<span class="' + _interface.options.role + '">' + markers[_interface.options.role] + '</span>');
     _interface.dot = $('#info .' + _interface.options.role);
@@ -31,9 +35,6 @@ module.exports = SC.Interface = Class.extend({
     _interface.peer.on('connection', function(conn) {
 
       _interface.dot.css('color', 'green');
-
-      var rot = _server.controls.rotationVector,
-          mov = _server.controls.moveVector;
  
       conn.on('data', function(data){
  
@@ -121,7 +122,7 @@ module.exports = SC.Interface = Class.extend({
 
       } else if (namespace == "tactical") {
 
-        if (command == "torpedo") new SC.Torpedo(_server); // , _interface.ship);
+        if (command == "torpedo") _server.ship.torpedo();
 
       }
     }

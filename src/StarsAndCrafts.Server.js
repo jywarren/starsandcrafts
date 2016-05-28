@@ -65,12 +65,14 @@ SC.Server = Class.extend({
     _server.renderer.setSize( window.innerWidth, window.innerHeight );
     container.appendChild( _server.renderer.domElement ); 
 
- 
+    _server.ship = new SC.Ship(_server);
+
     _server.interfaces = [];
 
     _server.interfaces.push(
       new SC.Interface(_server, { role: 'helm' }),
-      new SC.Interface(_server, { role: 'sensors' })
+      new SC.Interface(_server, { role: 'sensors' }),
+      new SC.Interface(_server, { role: 'tactical' })
     );
 
 
@@ -97,6 +99,17 @@ SC.Server = Class.extend({
     _server.update();
 
 
+  },
+
+  push: function( pusher, pushed, force ) {
+
+    var zVec = new THREE.Vector3( 0, 0, -force );
+
+    zVec.applyQuaternion( pusher.quaternion );
+
+    pushed.setLinearVelocity( zVec );
+
   }
+
 
 });

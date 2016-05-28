@@ -127,6 +127,8 @@ Handle dramatic size differences with logarithmic z-buffer: http://threejs.org/e
 
 Depth of field (for zooming): http://threejs.org/examples/#webgl_postprocessing_dof
 
+Vectors: http://threejs.org/docs/#Reference/Math/Vector3
+
 ### Models
 
 Comet 67P/Churyumov-Gerasimenko - via Rosetta/ESA: http://www.thingiverse.com/thing:490245
