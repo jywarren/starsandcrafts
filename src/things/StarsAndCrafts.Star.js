@@ -10,7 +10,22 @@ module.exports = Class.extend({
       z: z
     }
  
-    var textureLoader = new THREE.TextureLoader();
+
+    // first, a light source:
+ 
+    _star.light = new THREE.PointLight( 0xffffff, 1.5, 2000 );
+    _star.light.color.setHSL( h, s, l );
+    _star.light.position.set( x, y, z );
+
+    _server.scene.add( _star.light );
+
+
+    // then, some badass lens flares!
+
+    // these textures are erroring; may need to 
+    // wait until they load as in Cosmos#loadTexture,
+    // or maybe don't add it to the scene until onload? 
+    textureLoader = new THREE.TextureLoader();
  
     var textureFlare0 = textureLoader.load( "../images/textures/lensflares/lensflare0.png" );
     var textureFlare2 = textureLoader.load( "../images/textures/lensflares/lensflare2.png" );
@@ -34,31 +49,37 @@ module.exports = Class.extend({
       object.lensFlares[ 3 ].rotation = object.positionScreen.x * 0.5 + THREE.Math.degToRad( 45 );
  
     }
- 
- 
-    _star.light = new THREE.PointLight( 0xffffff, 1.5, 2000 );
-    _star.light.color.setHSL( h, s, l );
-    _star.light.position.set( x, y, z );
-
-    _server.scene.add( _star.light );
-
 
     var flareColor = new THREE.Color( 0xffffff );
     flareColor.setHSL( h, s, l + 0.5 );
 
     _star.lensFlare = new THREE.LensFlare( textureFlare0, 700, 0.0, THREE.AdditiveBlending, flareColor );
 
+    // actually not sure what this is... some sort of linear glintiness?
     _star.lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
     _star.lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
     _star.lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
+
+    // floaty dots
     _star.lensFlare.add( textureFlare3, 60,  0.6, THREE.AdditiveBlending );
     _star.lensFlare.add( textureFlare3, 70,  0.7, THREE.AdditiveBlending );
     _star.lensFlare.add( textureFlare3, 120, 0.9, THREE.AdditiveBlending );
     _star.lensFlare.add( textureFlare3, 70,  1.0, THREE.AdditiveBlending );
+
     _star.lensFlare.customUpdateCallback = lensFlareUpdateCallback;
     _star.lensFlare.position.copy( _star.light.position );
 
-    _server.scene.add( _star.lensFlare );
+
+// this delayed load didn't work, nor did simply waiting 5 seconds.
+//    textureLoader.manager.onLoad = function() {
+//setTimeout(function() {
+
+//      console.log('LOADED');
+//      console.log(textureLoader);
+      _server.scene.add( _star.lensFlare );
+
+//},15000);
+//    };
 
 
     _star.update = function(position) {

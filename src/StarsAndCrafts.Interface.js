@@ -18,6 +18,7 @@ module.exports = SC.Interface = Class.extend({
       "tactical":       "T"
     }
 
+    // swap for actual physics
     var rot = _server.controls.rotationVector,
         mov = _server.controls.moveVector;
 

@@ -85,20 +85,30 @@ module.exports = StarsAndCrafts.Thing.extend({
     _server.objects.push( _torpedo );
 
 
-    if (_torpedo.options.collidable && _torpedo.mesh) {
+    // A HIT!
+    _torpedo.mesh.addEventListener( 'collision', function( other_object, linear_velocity, angular_velocity ) {
 
-      _torpedo.mesh.addEventListener( 'collision', function( other_object, linear_velocity, angular_velocity ) {
-        console.log('Boom!!');
-      });
+      console.log('Boom!!');
 
-    }
+      if (other_object.shields) {
+        if (other_object.shields > 0) {
+          other_object.shields -= parseInt(Math.random() * 10);
+          if (other_object.shields < 0) other_object.shields = 0;
+        } else if (other_object.shields <= 0) {
+          // damage beyond shields
+        }
+      }
+
+      _torpedo.remove();
+
+    });
 
 
     setTimeout(function() {
 
       _torpedo.remove();
 
-    }, 5000);
+    }, 10000);
 
 
     _torpedo.remove = function() {
