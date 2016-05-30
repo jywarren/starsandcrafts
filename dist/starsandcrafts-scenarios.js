@@ -2,6 +2,22 @@ SC = SC || {};
 SC.Scenarios = {
 
 
+  // fire a torpedo on space key
+  "torpedo": function(server) {
+
+    torpedo = new SC.Torpedo(server);
+
+    torpedo.mesh.position.copy(server.camera.position);
+    torpedo.mesh.position.y -= 10;
+    torpedo.mesh.position.x += 10;
+
+    server.push(server.camera, torpedo.mesh, 50);
+
+    return torpedo;
+
+  },
+
+
   // the planetoid/asteroid
   "eros": function(server) {
 

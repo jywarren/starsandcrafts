@@ -51,20 +51,8 @@
 
       SC.Scenarios['asteroids'](server);
 
-      torpedo = new SC.Torpedo(server);
-
       SC.Scenarios['eros'](server);
-/*
-      setInterval(function() {
-  
-        torpedo.mesh.setLinearVelocity({
-          x: Math.sin(server.clock.elapsedTime / 3),
-          y: Math.cos(server.clock.elapsedTime / 3),
-          z: 0
-        });
-  
-      },50);
-*/
+
     </script>
 
   </body>

@@ -40,12 +40,16 @@ SC.Server = Class.extend({
  
     _server.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 1100 );
 
+
+    // some event listeners and such
     _server.events = SC.Events(_server);
+
 
     _server.key = SC.Util.getUrlHashParameter('key');
     $('#info .key').html(' | Key: ' + _server.key);
 
-    // move to controls class 
+
+    // non-thruster 'hook' controls:
     _server.controls = new THREE.FlyControls( _server.camera );
  
     _server.controls.movementSpeed = 0.1;
@@ -53,6 +57,7 @@ SC.Server = Class.extend({
     _server.controls.rollSpeed = Math.PI / 360;
     _server.controls.autoForward = false;
     _server.controls.dragToLook = true;
+
  
     _server.scene = new Physijs.Scene();
     _server.scene.setGravity(new THREE.Vector3( 0, 0, 0 ));
@@ -65,13 +70,8 @@ SC.Server = Class.extend({
     _server.renderer.setSize( window.innerWidth, window.innerHeight );
     container.appendChild( _server.renderer.domElement ); 
 
- 
-    _server.interfaces = [];
 
-    _server.interfaces.push(
-      new SC.Interface(_server, { role: 'helm' }),
-      new SC.Interface(_server, { role: 'sensors' })
-    );
+    _server.ship = new SC.Ship(_server);
 
 
     _server.update = function() {
@@ -97,6 +97,19 @@ SC.Server = Class.extend({
     _server.update();
 
 
+  },
+
+
+  // pushed mesh is pushed in direction that pusher is looking, with force
+  push: function( pusher, pushed, force ) {
+
+    var zVec = new THREE.Vector3( 0, 0, -force );
+
+    zVec.applyQuaternion( pusher.quaternion );
+
+    pushed.setLinearVelocity( zVec );
+
   }
+
 
 });

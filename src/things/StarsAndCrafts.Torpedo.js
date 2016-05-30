@@ -27,18 +27,9 @@ module.exports = StarsAndCrafts.Thing.extend({
                       _server.transparentMaterial
     );
 
-    _torpedo.mesh.position.set( 0, 0, -10 );
+    _torpedo.mesh.position.set( 0, 0, 0 );
 
     _server.scene.add( _torpedo.mesh );
-/*
-    _torpedo.mesh.setLinearVelocity( 
-      new THREE.Vector3(
-        Math.random() * 2 - 1, 
-        Math.random() * 2 - 1, 
-        Math.random() * 2 - 2
-      )
-    );
-*/
  
     var textureLoader = new THREE.TextureLoader();
  
@@ -93,6 +84,41 @@ module.exports = StarsAndCrafts.Thing.extend({
 
     _server.objects.push( _torpedo );
 
+
+    // A HIT!
+    _torpedo.mesh.addEventListener( 'collision', function( other_object, linear_velocity, angular_velocity ) {
+
+      console.log('Boom!!');
+
+      if (other_object.shields) {
+        if (other_object.shields > 0) {
+          other_object.shields -= parseInt(Math.random() * 10);
+          if (other_object.shields < 0) other_object.shields = 0;
+        } else if (other_object.shields <= 0) {
+          // damage beyond shields
+        }
+      }
+
+      _torpedo.remove();
+
+    });
+
+
+    setTimeout(function() {
+
+      _torpedo.remove();
+
+    }, 10000);
+
+
+    _torpedo.remove = function() {
+
+      server.objects.splice(server.objects.indexOf(_torpedo), 1);
+      server.scene.remove(_torpedo.lensFlare);
+      server.scene.remove(_torpedo.light);
+      server.scene.remove(_torpedo.mesh);
+
+    }
 
     _torpedo.update = function(position) {
 

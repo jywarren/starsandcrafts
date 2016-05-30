@@ -24,12 +24,12 @@ module.exports = StarsAndCrafts.Model = StarsAndCrafts.Thing.extend({
       });
 
       _model.mesh = new Physijs.BoxMesh( geometry, _model.material );
+      _model.mesh.castShadow = true;
+      _model.mesh.receiveShadow = true;
+
       _server.scene.add( _model.mesh );
       _server.objects.push( _model );
 
-
-      _model.mesh.castShadow = true;
-      _model.mesh.receiveShadow = true;
       _model.mesh.position.set( 50, 30, -130 );
       _model.mesh.__dirtyPosition = true;
 

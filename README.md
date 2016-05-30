@@ -65,22 +65,17 @@ The client is just a webpage with a peer to peer connection to the server page. 
 
 ````js
 
-helm = new SC.Client(function(conn, key) {
+var client = new SC.Client('helm');
 
-  // on button press:
-  $('.command-up').on('mousedown', function() { conn.send('up') });
+// on button press:
+client.onClick('.up', 'up');
+client.onClick('.down', 'down');
 
-  // on key press:
-  key.on('Up',    function(e) { conn.send('up') });
-  key.on('Down',  function(e) { conn.send('down') });
-  key.on('Left',  function(e) { conn.send('left') });
-  key.on('Right', function(e) { conn.send('right') });
-  key.on('Q',     function(e) { conn.send('tiltleft') });
-  key.on('E',     function(e) { conn.send('tiltright') });
-  key.on('W',     function(e) { conn.send('forward') });
-  key.on('S',     function(e) { conn.send('backward') });
-
-});
+// on key press:
+client.onKey('Up', 'up');
+client.onKey('Down', 'down');
+client.onKey('W', 'forward');
+client.onKey('S', 'backward');
 
 ````
 
@@ -126,6 +121,8 @@ http://www.inkfood.com/spacedebris/ - game with engines, explosions, asteroids
 Handle dramatic size differences with logarithmic z-buffer: http://threejs.org/examples/#webgl_camera_logarithmicdepthbuffer
 
 Depth of field (for zooming): http://threejs.org/examples/#webgl_postprocessing_dof
+
+Vectors: http://threejs.org/docs/#Reference/Math/Vector3
 
 ### Models
 

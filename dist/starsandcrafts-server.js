@@ -56696,6 +56696,7 @@ module.exports = SC.Interface = Class.extend({
 
     _interface.options = options = options || {};
     _interface.options.role = _interface.options.role || ""; // usually "helm"
+
     var markers = {
       "helm":           "H",
       "sensors":        "S",
@@ -56703,6 +56704,10 @@ module.exports = SC.Interface = Class.extend({
       "communications": "C",
       "tactical":       "T"
     }
+
+    // swap for actual physics
+    var rot = _server.controls.rotationVector,
+        mov = _server.controls.moveVector;
 
     $('#info').append('<span class="' + _interface.options.role + '">' + markers[_interface.options.role] + '</span>');
     _interface.dot = $('#info .' + _interface.options.role);
@@ -56718,9 +56723,6 @@ module.exports = SC.Interface = Class.extend({
     _interface.peer.on('connection', function(conn) {
 
       _interface.dot.css('color', 'green');
-
-      var rot = _server.controls.rotationVector,
-          mov = _server.controls.moveVector;
  
       conn.on('data', function(data){
  
@@ -56808,7 +56810,7 @@ module.exports = SC.Interface = Class.extend({
 
       } else if (namespace == "tactical") {
 
-        if (command == "torpedo") new SC.Torpedo(_server); // , _interface.ship);
+        if (command == "torpedo") _server.ship.torpedo();
 
       }
     }
@@ -56864,12 +56866,16 @@ SC.Server = Class.extend({
  
     _server.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 1100 );
 
+
+    // some event listeners and such
     _server.events = SC.Events(_server);
+
 
     _server.key = SC.Util.getUrlHashParameter('key');
     $('#info .key').html(' | Key: ' + _server.key);
 
-    // move to controls class 
+
+    // non-thruster 'hook' controls:
     _server.controls = new THREE.FlyControls( _server.camera );
  
     _server.controls.movementSpeed = 0.1;
@@ -56877,6 +56883,7 @@ SC.Server = Class.extend({
     _server.controls.rollSpeed = Math.PI / 360;
     _server.controls.autoForward = false;
     _server.controls.dragToLook = true;
+
  
     _server.scene = new Physijs.Scene();
     _server.scene.setGravity(new THREE.Vector3( 0, 0, 0 ));
@@ -56889,13 +56896,8 @@ SC.Server = Class.extend({
     _server.renderer.setSize( window.innerWidth, window.innerHeight );
     container.appendChild( _server.renderer.domElement ); 
 
- 
-    _server.interfaces = [];
 
-    _server.interfaces.push(
-      new SC.Interface(_server, { role: 'helm' }),
-      new SC.Interface(_server, { role: 'sensors' })
-    );
+    _server.ship = new SC.Ship(_server);
 
 
     _server.update = function() {
@@ -56921,7 +56923,20 @@ SC.Server = Class.extend({
     _server.update();
 
 
+  },
+
+
+  // pushed mesh is pushed in direction that pusher is looking, with force
+  push: function( pusher, pushed, force ) {
+
+    var zVec = new THREE.Vector3( 0, 0, -force );
+
+    zVec.applyQuaternion( pusher.quaternion );
+
+    pushed.setLinearVelocity( zVec );
+
   }
+
 
 });
 
@@ -57499,6 +57514,8 @@ module.exports = StarsAndCrafts.Thing.extend({
     });
 
     _asteroid.mesh = new Physijs.BoxMesh( _server.asteroidCube, _server.asteroidMaterial );
+//    _asteroid.mesh.castShadow = true;
+//    _asteroid.mesh.receiveShadow = true;
 
     _asteroid.mesh.position.x = 100 * ( 2.0 * Math.random() - 1.0 );
     _asteroid.mesh.position.y = 10  * ( 2.0 * Math.random() - 1.0 ) - 12; // below the ecliptic
@@ -57643,12 +57660,12 @@ module.exports = StarsAndCrafts.Model = StarsAndCrafts.Thing.extend({
       });
 
       _model.mesh = new Physijs.BoxMesh( geometry, _model.material );
+      _model.mesh.castShadow = true;
+      _model.mesh.receiveShadow = true;
+
       _server.scene.add( _model.mesh );
       _server.objects.push( _model );
 
-
-      _model.mesh.castShadow = true;
-      _model.mesh.receiveShadow = true;
       _model.mesh.position.set( 50, 30, -130 );
       _model.mesh.__dirtyPosition = true;
 
@@ -57678,9 +57695,72 @@ module.exports = StarsAndCrafts.Model = StarsAndCrafts.Thing.extend({
 },{"three-stl-loader":17}],28:[function(require,module,exports){
 module.exports = StarsAndCrafts.Thing.extend({
 
-  init: function(_server) {
+  init: function(_server, options) {
 
     var _ship = this;
+    _ship.options = options || {};
+    _ship.options.mesh = _ship.options.mesh || false;
+
+    _ship.interfaces = [];
+
+    _ship.interfaces.push(
+      new SC.Interface(_server, { role: 'helm' }),
+      new SC.Interface(_server, { role: 'sensors' }),
+      new SC.Interface(_server, { role: 'tactical' })
+    );
+
+
+    _ship.shields      = true;
+    _ship.shieldPower  = 100;
+    _ship.energy       = 100;
+    _ship.torpedos     = 10;
+    _ship.thrusterFuel = 200;
+
+
+    if (_ship.options.mesh) {
+
+      _ship.geometry = new THREE.BoxGeometry( 1, 1, 1 );
+     
+      _ship.material = new THREE.MeshLambertMaterial({
+        color:       0xaaaaaa,
+        opacity:     1, 
+      });
+     
+      _ship.mesh = new Physijs.BoxMesh(
+                      _ship.geometry, 
+                      _ship.material
+      );
+
+    }
+
+
+    _ship.torpedo = function(xOffset, yOffset) {
+
+      if (_ship.torpedos > 1) {
+
+        _ship.torpedos += 1;
+ 
+        xOffset = xOffset || 10;
+        yOffset = yOffset || 10;
+ 
+        _torpedo = new SC.Torpedo(_server);
+  
+        _torpedo.mesh.__dirtyPosition = true;
+        _torpedo.mesh.position.copy(_server.camera.position);
+        _torpedo.mesh.position.y -= yOffset;
+        _torpedo.mesh.position.x += xOffset;
+  
+        server.push(_server.camera, _torpedo.mesh, 50);
+
+        return true;
+
+      } else {
+
+        return false;
+
+      }
+
+    }
  
   }
 
@@ -57699,7 +57779,23 @@ module.exports = Class.extend({
       z: z
     }
  
-    var textureLoader = new THREE.TextureLoader();
+
+    // first, a light source:
+ 
+    _star.light = new THREE.DirectionalLight( 0xffffff, 1.5 );
+//    _star.light.castShadow = true;
+    _star.light.color.setHSL( h, s, l );
+    _star.light.position.set( x, y, z );
+
+    _server.scene.add( _star.light );
+
+
+    // then, some badass lens flares!
+
+    // these textures are erroring; may need to 
+    // wait until they load as in Cosmos#loadTexture,
+    // or maybe don't add it to the scene until onload? 
+    textureLoader = new THREE.TextureLoader();
  
     var textureFlare0 = textureLoader.load( "../images/textures/lensflares/lensflare0.png" );
     var textureFlare2 = textureLoader.load( "../images/textures/lensflares/lensflare2.png" );
@@ -57723,31 +57819,37 @@ module.exports = Class.extend({
       object.lensFlares[ 3 ].rotation = object.positionScreen.x * 0.5 + THREE.Math.degToRad( 45 );
  
     }
- 
- 
-    _star.light = new THREE.PointLight( 0xffffff, 1.5, 2000 );
-    _star.light.color.setHSL( h, s, l );
-    _star.light.position.set( x, y, z );
-
-    _server.scene.add( _star.light );
-
 
     var flareColor = new THREE.Color( 0xffffff );
     flareColor.setHSL( h, s, l + 0.5 );
 
     _star.lensFlare = new THREE.LensFlare( textureFlare0, 700, 0.0, THREE.AdditiveBlending, flareColor );
 
+    // actually not sure what this is... some sort of linear glintiness?
     _star.lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
     _star.lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
     _star.lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
+
+    // floaty dots
     _star.lensFlare.add( textureFlare3, 60,  0.6, THREE.AdditiveBlending );
     _star.lensFlare.add( textureFlare3, 70,  0.7, THREE.AdditiveBlending );
     _star.lensFlare.add( textureFlare3, 120, 0.9, THREE.AdditiveBlending );
     _star.lensFlare.add( textureFlare3, 70,  1.0, THREE.AdditiveBlending );
+
     _star.lensFlare.customUpdateCallback = lensFlareUpdateCallback;
     _star.lensFlare.position.copy( _star.light.position );
 
-    _server.scene.add( _star.lensFlare );
+
+// this delayed load didn't work, nor did simply waiting 5 seconds.
+//    textureLoader.manager.onLoad = function() {
+//setTimeout(function() {
+
+//      console.log('LOADED');
+//      console.log(textureLoader);
+      _server.scene.add( _star.lensFlare );
+
+//},15000);
+//    };
 
 
     _star.update = function(position) {
@@ -57828,18 +57930,9 @@ module.exports = StarsAndCrafts.Thing.extend({
                       _server.transparentMaterial
     );
 
-    _torpedo.mesh.position.set( 0, 0, -10 );
+    _torpedo.mesh.position.set( 0, 0, 0 );
 
     _server.scene.add( _torpedo.mesh );
-/*
-    _torpedo.mesh.setLinearVelocity( 
-      new THREE.Vector3(
-        Math.random() * 2 - 1, 
-        Math.random() * 2 - 1, 
-        Math.random() * 2 - 2
-      )
-    );
-*/
  
     var textureLoader = new THREE.TextureLoader();
  
@@ -57894,6 +57987,41 @@ module.exports = StarsAndCrafts.Thing.extend({
 
     _server.objects.push( _torpedo );
 
+
+    // A HIT!
+    _torpedo.mesh.addEventListener( 'collision', function( other_object, linear_velocity, angular_velocity ) {
+
+      console.log('Boom!!');
+
+      if (other_object.shields) {
+        if (other_object.shields > 0) {
+          other_object.shields -= parseInt(Math.random() * 10);
+          if (other_object.shields < 0) other_object.shields = 0;
+        } else if (other_object.shields <= 0) {
+          // damage beyond shields
+        }
+      }
+
+      _torpedo.remove();
+
+    });
+
+
+    setTimeout(function() {
+
+      _torpedo.remove();
+
+    }, 10000);
+
+
+    _torpedo.remove = function() {
+
+      server.objects.splice(server.objects.indexOf(_torpedo), 1);
+      server.scene.remove(_torpedo.lensFlare);
+      server.scene.remove(_torpedo.light);
+      server.scene.remove(_torpedo.mesh);
+
+    }
 
     _torpedo.update = function(position) {
 

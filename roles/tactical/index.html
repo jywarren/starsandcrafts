@@ -30,9 +30,7 @@
 
     <div id="controls" class="row" style="text-align:center;">
 
-      <p><a class="btn btn-lg btn-default zoom-in">Zoom in</a></p>
-      <p><a class="btn btn-lg btn-default zoom-out">Zoom out</a></p>
-      <p><a class="btn btn-lg btn-default zoom-default">Zoom default</a></p>
+      <p><a class="btn btn-lg btn-default torpedo">Fire torpedo</a></p>
 
       <p><a class="btn btn-lg btn-default reconnect">Reconnect</a></p>
 
@@ -48,13 +46,11 @@
 
       (function() { 
 
-        client = new SC.Client('sensors');
- 
-        client.onClick('.zoom-in', 'zoom:in');
+        client = new SC.Client('tactical');
+
+        client.onClick('.torpedo', 'torpedo');
   
-        client.onKey('=', 'zoom:in');
-        client.onKey('-', 'zoom:out');
-        client.onKey(' ', 'zoom:default');
+        client.onKey('Space', 'torpedo');
 
         $('.connect').click(function() {
           client.connect();
