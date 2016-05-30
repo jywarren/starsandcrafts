@@ -30,9 +30,9 @@
 
     <div id="controls" class="row" style="text-align:center;">
 
-      <p><a class="btn btn-lg btn-default command" data-command="sensors:zoom:in">Zoom in</a></p>
-      <p><a class="btn btn-lg btn-default command" data-command="sensors:zoom:out">Zoom out</a></p>
-      <p><a class="btn btn-lg btn-default command" data-command="sensors:zoom:default">Zoom default</a></p>
+      <p><a class="btn btn-lg btn-default zoom-in">Zoom in</a></p>
+      <p><a class="btn btn-lg btn-default zoom-out">Zoom out</a></p>
+      <p><a class="btn btn-lg btn-default zoom-default">Zoom default</a></p>
 
       <p><a class="btn btn-lg btn-default reconnect">Reconnect</a></p>
 
@@ -48,27 +48,16 @@
 
       (function() { 
 
-        client = new SC.Client(function(conn, key) {
-
+        client = new SC.Client('sensors');
  
-          $('.command').on('mousedown', function() {
-            console.log($(this).attr('data-command'));
-            conn.send($(this).attr('data-command'));
-          });
-    
-          key.on('=', function(e) { conn.send('sensors:zoom:in') });
-          key.on('-', function(e) { conn.send('sensors:zoom:out') });
-          key.on(' ', function(e) { conn.send('sensors:zoom:default') });
- 
-          $('.connect').click(function() {
-            client.connect();
-          });
+        client.onClick('.zoom-in', 'zoom:in');
+  
+        client.onKey('=', 'zoom:in');
+        client.onKey('-', 'zoom:out');
+        client.onKey(' ', 'zoom:default');
 
-
-        }, {
-
-          role: "sensors"
-
+        $('.connect').click(function() {
+          client.connect();
         });
 
       })();

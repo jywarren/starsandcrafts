@@ -9,12 +9,12 @@ $ = require('jquery');
 
 SC.Client = Class.extend({
 
-  init: function(callback, options) {
+  init: function(role, options) {
 
     var _client = this;
 
     _client.options = options || {};
-    _client.options.role = _client.options.role || ""; // usually "helm" 
+    _client.options.role = role || ""; // i.e. "helm" 
 
     // https://www.npmjs.com/package/keyboard-cjs
     _client.keyboard = new Keyboard(window);
@@ -36,6 +36,29 @@ SC.Client = Class.extend({
   
       }
  
+    }
+
+
+    _client.onKey = function(keys, command) {
+
+      _client.keyboard.on(keys, function(e) { _client.send(command) });
+
+    }
+
+
+    _client.onClick = function(selector, command) {
+
+      $(selector).on('click', function() {
+        _client.send(command);
+      });
+
+    }
+
+
+    _client.send = function(command) {
+
+      _client.connection.send(_client.options.role + ':' + command);
+
     }
  
  
@@ -60,7 +83,7 @@ SC.Client = Class.extend({
         $('.alert').removeClass('alert-warning');
 
         // should try to make some of above private
-        if (callback) callback(_client.connection, _client.keyboard);
+        if (_client.options.callback) _client.options.callback(_client.connection, _client.onKey);
 
       });
 
