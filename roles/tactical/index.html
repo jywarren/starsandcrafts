@@ -67,10 +67,26 @@
   
         client.onKey('Space', 'torpedo');
 
-        client.listen('shields', function(data) {
+        client.listen('torpedos', function(data) {
 
-          $('.shields div').width(data);
-          $('.shields div').html(data);
+          $('.torpedos').html(data);
+
+        });
+
+        client.listen('shieldPower', function(data) {
+
+          var el = $('.shields .progress-bar');
+
+          el.width(data);
+          el.html(data);
+
+          el.removeClass('progress-bar-danger');
+          el.removeClass('progress-bar-warning');
+          el.removeClass('progress-bar-success');
+
+          if      (parseInt(data) > 75) el.addClass('progress-bar-success');
+          else if (parseInt(data) > 50) el.addClass('progress-bar-warning');
+          else                          el.addClass('progress-bar-danger');
 
         });
 
