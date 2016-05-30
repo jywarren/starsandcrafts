@@ -32,10 +32,23 @@ module.exports = SC.Interface = Class.extend({
       _server.key + "-server-" + _interface.options.role, 
       { key: 'wapghotvz0s2x1or' }
     );
+
+
+    _interface.send = function(msg) {
+
+      if (_interface.peer.connections[_server.key + "-" + _interface.options.role]) {
+        _interface.peer.connections[_server.key + "-" + _interface.options.role][0].send(msg);
+      }
+
+    }
+
  
     _interface.peer.on('connection', function(conn) {
 
       _interface.dot.css('color', 'green');
+
+      // refactor this to get the parent, not working back from server; for multiplayer
+      _server.ship.sync();
  
       conn.on('data', function(data){
  

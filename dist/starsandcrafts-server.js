@@ -56719,10 +56719,23 @@ module.exports = SC.Interface = Class.extend({
       _server.key + "-server-" + _interface.options.role, 
       { key: 'wapghotvz0s2x1or' }
     );
+
+
+    _interface.send = function(msg) {
+
+      if (_interface.peer.connections[_server.key + "-" + _interface.options.role]) {
+        _interface.peer.connections[_server.key + "-" + _interface.options.role][0].send(msg);
+      }
+
+    }
+
  
     _interface.peer.on('connection', function(conn) {
 
       _interface.dot.css('color', 'green');
+
+      // refactor this to get the parent, not working back from server; for multiplayer
+      _server.ship.sync();
  
       conn.on('data', function(data){
  
@@ -57701,20 +57714,18 @@ module.exports = StarsAndCrafts.Thing.extend({
     _ship.options = options || {};
     _ship.options.mesh = _ship.options.mesh || false;
 
-    _ship.interfaces = [];
+    _ship.interfaces = {};
 
-    _ship.interfaces.push(
-      new SC.Interface(_server, { role: 'helm' }),
-      new SC.Interface(_server, { role: 'sensors' }),
-      new SC.Interface(_server, { role: 'tactical' })
-    );
+    _ship.interfaces['helm'] = new SC.Interface(_server, { role: 'helm' }),
+    _ship.interfaces['sensors'] = new SC.Interface(_server, { role: 'sensors' }),
+    _ship.interfaces['tactical'] = new SC.Interface(_server, { role: 'tactical' })
 
 
     _ship.shields      = true;
     _ship.shieldPower  = 100;
     _ship.energy       = 100;
     _ship.torpedos     = 10;
-    _ship.thrusterFuel = 200;
+    _ship.fuel = 200;
 
 
     if (_ship.options.mesh) {
@@ -57734,11 +57745,50 @@ module.exports = StarsAndCrafts.Thing.extend({
     }
 
 
+    _ship.sync = function() {
+
+      // must add an "is connected" check or will error
+      if (_ship.interfaces['tactical']) {
+        _ship.interfaces['tactical'].send('shieldPower:' + _ship.shieldPower + '%');
+        _ship.interfaces['tactical'].send('energy:' + _ship.energy + '%');
+        _ship.interfaces['tactical'].send('torpedos:' + _ship.torpedos);
+      }
+
+      if (_ship.interfaces['helm']) {
+        _ship.interfaces['helm'].send('fuel:' + _ship.fuel);
+        _ship.interfaces['helm'].send('energy:' + _ship.energy + '%');
+      }
+
+    }
+
+
+    _ship.shake = function(count, delay, intensity) {
+
+      count     = count     || 10;
+      delay     = delay     || 20;
+      intensity = intensity || 1;
+      var dir = 1,
+          interval = setInterval( function() {
+
+        _server.camera.rotateX(intensity * Math.random() * 0.01 * dir);
+        _server.camera.rotateY(intensity * Math.random() * 0.01 * dir);
+        _server.camera.rotateZ(intensity * Math.random() * 0.01 * dir);
+
+        dir *= -1;
+        count -= 1;
+
+        if (count <= 0) clearInterval(interval);
+
+      }, delay);
+
+    }
+
+
     _ship.torpedo = function(xOffset, yOffset) {
 
       if (_ship.torpedos > 1) {
 
-        _ship.torpedos += 1;
+        _ship.torpedos -= 1;
  
         xOffset = xOffset || 10;
         yOffset = yOffset || 10;
@@ -57750,7 +57800,9 @@ module.exports = StarsAndCrafts.Thing.extend({
         _torpedo.mesh.position.y -= yOffset;
         _torpedo.mesh.position.x += xOffset;
   
-        server.push(_server.camera, _torpedo.mesh, 50);
+        _server.push(_server.camera, _torpedo.mesh, 50);
+
+        _ship.sync();
 
         return true;
 
@@ -57761,6 +57813,8 @@ module.exports = StarsAndCrafts.Thing.extend({
       }
 
     }
+
+    _ship.sync();
  
   }
 
@@ -58001,6 +58055,10 @@ module.exports = StarsAndCrafts.Thing.extend({
           // damage beyond shields
         }
       }
+
+      if (other_object.sync) other_object.sync();
+
+      if (other_object.shake) other_object.shake();
 
       _torpedo.remove();
 

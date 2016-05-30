@@ -99,6 +99,10 @@ module.exports = StarsAndCrafts.Thing.extend({
         }
       }
 
+      if (other_object.sync) other_object.sync();
+
+      if (other_object.shake) other_object.shake();
+
       _torpedo.remove();
 
     });
