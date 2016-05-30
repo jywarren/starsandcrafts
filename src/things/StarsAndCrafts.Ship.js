@@ -39,6 +39,28 @@ module.exports = StarsAndCrafts.Thing.extend({
     }
 
 
+    _ship.shake = function(count, delay, intensity) {
+
+      count     = count     || 10;
+      delay     = delay     || 20;
+      intensity = intensity || 1;
+      var dir = 1,
+          interval = setInterval( function() {
+
+        _server.camera.rotateX(intensity * Math.random() * 0.01 * dir);
+        _server.camera.rotateY(intensity * Math.random() * 0.01 * dir);
+        _server.camera.rotateZ(intensity * Math.random() * 0.01 * dir);
+
+        dir *= -1;
+        count -= 1;
+
+        if (count <= 0) clearInterval(interval);
+
+      }, delay);
+
+    }
+
+
     _ship.torpedo = function(xOffset, yOffset) {
 
       if (_ship.torpedos > 1) {
