@@ -63,7 +63,7 @@ Stars and Crafts has two main codebases: the host "server" and the client (like 
 
 The client is just a webpage with a peer to peer connection to the server page. To develop a client, all you need to do is make a new "role" in the `roles/` directory, with the `index.html` (copy it from the Helm client, for example). Clients just bind events in the client page to commands sent to the server. An API of available commands will be published soon at https://github.com/jywarren/starsandcrafts/wiki.
 
-````js
+```js
 
 var client = new SC.Client('helm');
 
@@ -77,7 +77,22 @@ client.onKey('Down', 'down');
 client.onKey('W', 'forward');
 client.onKey('S', 'backward');
 
-````
+```
+
+To display status, as in http://starsandcrafts.org/role/tactical/, you can 'listen' for updates on a specific attribute from your ship, using the following code:
+
+```js
+
+client.listen('shields', function(data) {
+
+  $('.shields div').width(data);
+  $('.shields div').html(data);
+
+});
+
+```
+
+This updates the width and content of the specified `div` using the updated "shields" attribute, provided any time the `ship.sync()` is run on the server. This will be triggered on collisions (mostly/for now).
 
 
 ### Server

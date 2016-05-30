@@ -16,6 +16,8 @@ SC.Client = Class.extend({
     _client.options = options || {};
     _client.options.role = role || ""; // i.e. "helm" 
 
+    _client.listeners = {};
+
     // https://www.npmjs.com/package/keyboard-cjs
     _client.keyboard = new Keyboard(window);
 
@@ -55,9 +57,29 @@ SC.Client = Class.extend({
     }
 
 
+    // send command to the server
     _client.send = function(command) {
 
       _client.connection.send(_client.options.role + ':' + command);
+
+    }
+
+
+    // listen for <namespace> from _client.listeners commands from the server
+    _client.listen = function(namespace, handler) {
+
+      _client.listeners[namespace] = handler;
+
+    }
+
+
+    // receive message from server and pass it to any registered listeners
+    _client.receive = function(data) {
+
+      var namespace = data.split(':')[0],
+          attribute = data.split(':')[1];
+
+      if (_client.listeners[namespace]) _client.listeners[namespace](attribute);
 
     }
  
@@ -106,6 +128,14 @@ SC.Client = Class.extend({
         $('.alert').html('Disconnected from server ' + _client.key);
         $('.alert').removeClass('alert-success');
         $('.alert').addClass('alert-warning');
+
+      });
+
+      _client.connection.on('data', function(data) {
+
+        console.log('received', data);
+
+        _client.receive(data);
 
       });
  

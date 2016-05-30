@@ -32,6 +32,14 @@ module.exports = SC.Interface = Class.extend({
       _server.key + "-server-" + _interface.options.role, 
       { key: 'wapghotvz0s2x1or' }
     );
+
+
+    _interface.send = function(msg) {
+
+      _interface.peer.connections[_server.key + "-" + _interface.options.role][0].send(msg);
+
+    }
+
  
     _interface.peer.on('connection', function(conn) {
 

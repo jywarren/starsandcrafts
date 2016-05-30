@@ -6,13 +6,11 @@ module.exports = StarsAndCrafts.Thing.extend({
     _ship.options = options || {};
     _ship.options.mesh = _ship.options.mesh || false;
 
-    _ship.interfaces = [];
+    _ship.interfaces = {};
 
-    _ship.interfaces.push(
-      new SC.Interface(_server, { role: 'helm' }),
-      new SC.Interface(_server, { role: 'sensors' }),
-      new SC.Interface(_server, { role: 'tactical' })
-    );
+    _ship.interfaces['helm'] = new SC.Interface(_server, { role: 'helm' }),
+    _ship.interfaces['sensors'] = new SC.Interface(_server, { role: 'sensors' }),
+    _ship.interfaces['tactical'] = new SC.Interface(_server, { role: 'tactical' })
 
 
     _ship.shields      = true;
@@ -35,6 +33,15 @@ module.exports = StarsAndCrafts.Thing.extend({
                       _ship.geometry, 
                       _ship.material
       );
+
+    }
+
+
+    _ship.sync = function() {
+
+      if (_ship.interfaces['tactical']) {
+        _ship.interfaces['tactical'].send('shields:' + _ship.shields + '%');
+      }
 
     }
 
