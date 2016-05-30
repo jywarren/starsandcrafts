@@ -57514,6 +57514,8 @@ module.exports = StarsAndCrafts.Thing.extend({
     });
 
     _asteroid.mesh = new Physijs.BoxMesh( _server.asteroidCube, _server.asteroidMaterial );
+//    _asteroid.mesh.castShadow = true;
+//    _asteroid.mesh.receiveShadow = true;
 
     _asteroid.mesh.position.x = 100 * ( 2.0 * Math.random() - 1.0 );
     _asteroid.mesh.position.y = 10  * ( 2.0 * Math.random() - 1.0 ) - 12; // below the ecliptic
@@ -57658,12 +57660,12 @@ module.exports = StarsAndCrafts.Model = StarsAndCrafts.Thing.extend({
       });
 
       _model.mesh = new Physijs.BoxMesh( geometry, _model.material );
+      _model.mesh.castShadow = true;
+      _model.mesh.receiveShadow = true;
+
       _server.scene.add( _model.mesh );
       _server.objects.push( _model );
 
-
-      _model.mesh.castShadow = true;
-      _model.mesh.receiveShadow = true;
       _model.mesh.position.set( 50, 30, -130 );
       _model.mesh.__dirtyPosition = true;
 
@@ -57780,7 +57782,8 @@ module.exports = Class.extend({
 
     // first, a light source:
  
-    _star.light = new THREE.PointLight( 0xffffff, 1.5, 2000 );
+    _star.light = new THREE.DirectionalLight( 0xffffff, 1.5 );
+//    _star.light.castShadow = true;
     _star.light.color.setHSL( h, s, l );
     _star.light.position.set( x, y, z );
 

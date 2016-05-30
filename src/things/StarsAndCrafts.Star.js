@@ -13,7 +13,8 @@ module.exports = Class.extend({
 
     // first, a light source:
  
-    _star.light = new THREE.PointLight( 0xffffff, 1.5, 2000 );
+    _star.light = new THREE.DirectionalLight( 0xffffff, 1.5 );
+//    _star.light.castShadow = true;
     _star.light.color.setHSL( h, s, l );
     _star.light.position.set( x, y, z );
 

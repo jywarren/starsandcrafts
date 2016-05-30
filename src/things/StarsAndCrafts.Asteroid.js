@@ -20,6 +20,8 @@ module.exports = StarsAndCrafts.Thing.extend({
     });
 
     _asteroid.mesh = new Physijs.BoxMesh( _server.asteroidCube, _server.asteroidMaterial );
+//    _asteroid.mesh.castShadow = true;
+//    _asteroid.mesh.receiveShadow = true;
 
     _asteroid.mesh.position.x = 100 * ( 2.0 * Math.random() - 1.0 );
     _asteroid.mesh.position.y = 10  * ( 2.0 * Math.random() - 1.0 ) - 12; // below the ecliptic
