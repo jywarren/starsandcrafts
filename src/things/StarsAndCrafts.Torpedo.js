@@ -13,18 +13,18 @@ module.exports = StarsAndCrafts.Thing.extend({
         l = 0.1;
 
     // create a geometry only if it doesn't already exist; reduce redundancy
-    _server.torpedoCube = _server.torpedoCube || new THREE.BoxGeometry( 1, 1, 1 );
+    _torpedo.cube = new THREE.BoxGeometry( 1, 1, 1 );
 
-    _server.transparentMaterial = _server.transparentMaterial || new THREE.MeshLambertMaterial({
+    _torpedo.transparentMaterial = new THREE.MeshLambertMaterial({
       color:       0xaaaa00,
       opacity:     0, 
       transparent: true 
     });
-    _server.transparentMaterial.depthWrite = false; 
+    _torpedo.transparentMaterial.depthWrite = false; 
 
     _torpedo.mesh = new Physijs.BoxMesh(
-                      _server.torpedoCube, 
-                      _server.transparentMaterial
+                      _torpedo.cube, 
+                      _torpedo.transparentMaterial
     );
 
     _torpedo.mesh.position.set( 0, 0, 0 );
@@ -117,10 +117,11 @@ module.exports = StarsAndCrafts.Thing.extend({
 
     _torpedo.remove = function() {
 
-      server.objects.splice(server.objects.indexOf(_torpedo), 1);
-      server.scene.remove(_torpedo.lensFlare);
-      server.scene.remove(_torpedo.light);
-      server.scene.remove(_torpedo.mesh);
+console.log('removing torpedo', _server);
+      _server.objects.splice(_server.objects.indexOf(_torpedo), 1);
+      _server.scene.remove(_torpedo.lensFlare);
+      _server.scene.remove(_torpedo.light);
+      _server.scene.remove(_torpedo.mesh);
 
     }
 

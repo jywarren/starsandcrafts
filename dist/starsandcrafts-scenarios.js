@@ -2,6 +2,26 @@ SC = SC || {};
 SC.Scenarios = {
 
 
+  // a mysterious alien
+  "alien": function() {
+
+    var alien = new SC.Ship(server, { 
+      crewed: false, 
+      width:  10,
+      height: 30,
+      length: 50,
+      position: {
+        x:  30,
+        y: -30,
+        z: -30
+      }
+    });
+
+    return alien;
+
+  },
+
+
   // fire a torpedo on space key
   "torpedo": function(server) {
 
@@ -14,6 +34,23 @@ SC.Scenarios = {
     server.push(server.camera, torpedo.mesh, 50);
 
     return torpedo;
+
+  },
+
+
+  // a wheel shaped space station
+  "station": function(server) {
+
+    station = new SC.Model('../models/wspacestation.stl', server, function() {
+
+      // models must load first, so we pass a callback function 
+      station.mesh.__dirtyPosition = true;
+      station.mesh.position.copy({ x: 100, y: 80, z: -50});
+      station.mesh.setAngularVelocity({ x: 0, y: 0, z: 0.1});
+
+    });
+
+    return station;
 
   },
 

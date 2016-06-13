@@ -71,7 +71,7 @@ SC.Server = Class.extend({
     container.appendChild( _server.renderer.domElement ); 
 
 
-    _server.ship = new SC.Ship(_server);
+    _server.ship = new SC.Ship(_server, { crewed: true });
 
 
     _server.update = function() {

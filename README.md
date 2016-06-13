@@ -146,6 +146,7 @@ Ida: http://www.thingiverse.com/thing:56511
 Vesta: http://www.thingiverse.com/thing:42888
 Phobos, Deimos, Eros: http://www.thingiverse.com/thing:4046
 
+Wheel-shaped space station: http://www.thingiverse.com/thing:614673
 
 ### Panoramas
 

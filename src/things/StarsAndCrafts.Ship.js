@@ -2,15 +2,18 @@ module.exports = StarsAndCrafts.Thing.extend({
 
   init: function(_server, options) {
 
+console.log('ship!');
     var _ship = this;
     _ship.options = options || {};
-    _ship.options.mesh = _ship.options.mesh || false;
+
+    // whether or not it's a visible object
+    _ship.options.crewed = _ship.options.crewed || false;
+
+    _ship.options.width  = _ship.options.width  || 10;
+    _ship.options.height = _ship.options.height || 40;
+    _ship.options.length = _ship.options.length || 80;
 
     _ship.interfaces = {};
-
-    _ship.interfaces['helm'] = new SC.Interface(_server, { role: 'helm' }),
-    _ship.interfaces['sensors'] = new SC.Interface(_server, { role: 'sensors' }),
-    _ship.interfaces['tactical'] = new SC.Interface(_server, { role: 'tactical' })
 
 
     _ship.shields      = true;
@@ -20,9 +23,19 @@ module.exports = StarsAndCrafts.Thing.extend({
     _ship.fuel = 200;
 
 
-    if (_ship.options.mesh) {
+    if (_ship.options.crewed) {
 
-      _ship.geometry = new THREE.BoxGeometry( 1, 1, 1 );
+      _ship.interfaces['helm'] = new SC.Interface(_server, { role: 'helm' });
+      _ship.interfaces['sensors'] = new SC.Interface(_server, { role: 'sensors' });
+      _ship.interfaces['tactical'] = new SC.Interface(_server, { role: 'tactical' });
+
+    } else {
+
+      _ship.geometry = new THREE.BoxGeometry( 
+        _ship.options.width, 
+        _ship.options.height, 
+        _ship.options.length
+      );
      
       _ship.material = new THREE.MeshLambertMaterial({
         color:       0xaaaaaa,
@@ -34,21 +47,30 @@ module.exports = StarsAndCrafts.Thing.extend({
                       _ship.material
       );
 
+      if (_ship.options.position) _ship.mesh.position.copy(_ship.options.position);
+
+      _server.scene.add( _ship.mesh );
+      _server.objects.push( _ship );
+
     }
 
 
     _ship.sync = function() {
 
-      // must add an "is connected" check or will error
-      if (_ship.interfaces['tactical']) {
-        _ship.interfaces['tactical'].send('shieldPower:' + _ship.shieldPower + '%');
-        _ship.interfaces['tactical'].send('energy:' + _ship.energy + '%');
-        _ship.interfaces['tactical'].send('torpedos:' + _ship.torpedos);
-      }
+      if (_ship.options.crewed) {
 
-      if (_ship.interfaces['helm']) {
-        _ship.interfaces['helm'].send('fuel:' + _ship.fuel);
-        _ship.interfaces['helm'].send('energy:' + _ship.energy + '%');
+        // must add an "is connected" check or will error
+        if (_ship.interfaces['tactical']) {
+          _ship.interfaces['tactical'].send('shieldPower:' + _ship.shieldPower + '%');
+          _ship.interfaces['tactical'].send('energy:' + _ship.energy + '%');
+          _ship.interfaces['tactical'].send('torpedos:' + _ship.torpedos);
+        }
+ 
+        if (_ship.interfaces['helm']) {
+          _ship.interfaces['helm'].send('fuel:' + _ship.fuel);
+          _ship.interfaces['helm'].send('energy:' + _ship.energy + '%');
+        }
+
       }
 
     }
